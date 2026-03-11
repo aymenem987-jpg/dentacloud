@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DentaCloud — Plateforme SaaS Cliniques Dentaires Algérie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0A7C6E;
+  --teal-light: #12A08F;
+  --teal-pale: #E6F7F5;
+  --gold: #C8973A;
+  --gold-light: #E8B55A;
+  --dark: #0D1F1C;
+  --dark-2: #132420;
+  --mid: #1E3530;
+  --text: #F0F9F7;
+  --text-muted: #8BBDB5;
+  --border: rgba(18,160,143,0.15);
+  --card-bg: rgba(19,36,32,0.8);
+  --glass: rgba(255,255,255,0.04);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display: flex; align-items:center; justify-content:space-between;
+  padding: 1.2rem 4rem;
+  backdrop-filter: blur(20px);
+  background: rgba(13,31,28,0.85);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.7rem; font-weight:700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.logo span { color: var(--teal-light); }
+
+.nav-links { display:flex; gap:2.5rem; align-items:center; }
+.nav-links a {
+  font-size:0.875rem; font-weight:500; color:var(--text-muted);
+  text-decoration:none; transition: color 0.2s;
+  letter-spacing: 0.03em;
+}
+.nav-links a:hover { color: var(--text); }
+
+.btn-nav {
+  background: var(--teal); color:#fff; border:none; cursor:pointer;
+  padding: 0.6rem 1.5rem; border-radius:6px;
+  font-family:'DM Sans',sans-serif; font-size:0.875rem; font-weight:500;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-nav:hover { background:var(--teal-light); transform:translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding: 8rem 2rem 4rem;
+  position:relative; overflow:hidden;
+}
+
+.hero-bg {
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(10,124,110,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(200,151,58,0.08) 0%, transparent 50%);
+}
+
+.hero-grid {
+  position:absolute; inset:0; z-index:0; opacity:0.06;
+  background-image:
+    linear-gradient(rgba(18,160,143,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18,160,143,0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.hero-badge {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  background: rgba(10,124,110,0.15); border:1px solid rgba(18,160,143,0.3);
+  border-radius:100px; padding:0.4rem 1rem;
+  font-size:0.78rem; font-weight:500; color:var(--teal-light);
+  letter-spacing:0.06em; text-transform:uppercase;
+  margin-bottom:2rem; position:relative; z-index:1;
+  animation: fadeUp 0.8s ease both;
+}
+
+.badge-dot {
+  width:6px; height:6px; border-radius:50%; background:var(--teal-light);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.5; transform:scale(1.3); }
+}
+
+h1 {
+  font-family:'Cormorant Garamond',serif;
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight:600; line-height:1.05;
+  letter-spacing:-0.03em;
+  position:relative; z-index:1;
+  animation: fadeUp 0.8s 0.1s ease both;
+  max-width:900px;
+}
+
+h1 em {
+  font-style:italic; color:var(--teal-light);
+  position:relative;
+}
+
+h1 em::after {
+  content:'';
+  position:absolute; bottom:-4px; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, var(--teal-light), transparent);
+}
+
+.hero-sub {
+  margin-top:1.5rem; max-width:580px;
+  font-size:1.05rem; line-height:1.7; color:var(--text-muted);
+  position:relative; z-index:1;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.hero-ctas {
+  margin-top:2.5rem; display:flex; gap:1rem; align-items:center;
+  position:relative; z-index:1;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  color:#fff; border:none; cursor:pointer;
+  padding:0.9rem 2.2rem; border-radius:8px;
+  font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:600;
+  box-shadow: 0 4px 24px rgba(10,124,110,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow: 0 8px 32px rgba(10,124,110,0.4); }
+
+.btn-secondary {
+  background:transparent; color:var(--text);
+  border:1px solid rgba(255,255,255,0.15); cursor:pointer;
+  padding:0.9rem 2.2rem; border-radius:8px;
+  font-family:'DM Sans',sans-serif; font-size:0.95rem; font-weight:500;
+  transition: border-color 0.2s, background 0.2s;
+  display:flex; align-items:center; gap:0.5rem;
+}
+.btn-secondary:hover { border-color:var(--teal-light); background:rgba(18,160,143,0.05); }
+
+.hero-stats {
+  margin-top:4rem; display:flex; gap:3rem;
+  position:relative; z-index:1;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+.stat { text-align:center; }
+.stat-num {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.2rem; font-weight:700; color:var(--text);
+  line-height:1;
+}
+.stat-num span { color:var(--gold-light); }
+.stat-label { font-size:0.78rem; color:var(--text-muted); margin-top:0.3rem; letter-spacing:0.04em; text-transform:uppercase; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* ── DASHBOARD PREVIEW ── */
+.dashboard-preview {
+  padding: 4rem 4rem 6rem;
+  position:relative;
+}
+
+.dash-wrapper {
+  max-width:1100px; margin:0 auto;
+  background: var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:16px; overflow:hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(18,160,143,0.1);
+  backdrop-filter:blur(20px);
+}
+
+.dash-topbar {
+  background: var(--mid); padding:0.8rem 1.5rem;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+
+.dash-dots { display:flex; gap:6px; }
+.dash-dot { width:10px;height:10px;border-radius:50%; }
+.dash-dot:nth-child(1){background:#FF5F57;}
+.dash-dot:nth-child(2){background:#FEBC2E;}
+.dash-dot:nth-child(3){background:#28C840;}
+
+.dash-url {
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem; color:var(--text-muted);
+  background:rgba(0,0,0,0.3); padding:0.3rem 1rem; border-radius:4px;
+}
+
+.dash-body { display:flex; min-height:500px; }
+
+/* Sidebar */
+.dash-sidebar {
+  width:200px; background:rgba(0,0,0,0.2);
+  border-right:1px solid var(--border);
+  padding:1.2rem 0;
+  flex-shrink:0;
+}
+
+.dash-logo-s {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem; font-weight:700;
+  padding:0 1rem 1rem; color:var(--text);
+  border-bottom:1px solid var(--border); margin-bottom:0.8rem;
+}
+.dash-logo-s span { color:var(--teal-light); }
+
+.dash-menu-item {
+  display:flex; align-items:center; gap:0.7rem;
+  padding:0.6rem 1rem; font-size:0.78rem;
+  color:var(--text-muted); cursor:pointer;
+  transition:all 0.15s; border-radius:0;
+}
+.dash-menu-item.active {
+  background:rgba(10,124,110,0.15);
+  color:var(--teal-light);
+  border-left:2px solid var(--teal-light);
+}
+.dash-menu-item:hover:not(.active) { background:rgba(255,255,255,0.03); color:var(--text); }
+
+.dash-menu-icon { font-size:1rem; width:18px; text-align:center; }
+
+/* Main content */
+.dash-main { flex:1; padding:1.5rem; overflow:hidden; }
+
+.dash-header-row {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:1.2rem;
+}
+.dash-title { font-size:1rem; font-weight:600; color:var(--text); }
+.dash-date { font-size:0.72rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+
+/* KPI Cards */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem; margin-bottom:1.2rem; }
+
+.kpi-card {
+  background:var(--glass); border:1px solid var(--border);
+  border-radius:10px; padding:1rem;
+  transition:transform 0.2s;
+}
+.kpi-card:hover { transform:translateY(-2px); }
+
+.kpi-label { font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem; }
+.kpi-value {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.6rem; font-weight:700; line-height:1; color:var(--text);
+}
+.kpi-delta {
+  font-size:0.68rem; margin-top:0.3rem;
+  display:flex; align-items:center; gap:0.3rem;
+}
+.kpi-delta.up { color:#4CAF8A; }
+.kpi-delta.down { color:#E57373; }
+
+/* Charts Row */
+.charts-row { display:grid; grid-template-columns:1.6fr 1fr; gap:0.8rem; margin-bottom:1.2rem; }
+
+.chart-card {
+  background:var(--glass); border:1px solid var(--border);
+  border-radius:10px; padding:1rem;
+}
+
+.chart-title { font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.8rem; }
+
+/* Bar chart */
+.mini-bars { display:flex; align-items:flex-end; gap:4px; height:60px; }
+.mini-bar {
+  flex:1; border-radius:3px 3px 0 0;
+  background:linear-gradient(to top, var(--teal), var(--teal-light));
+  opacity:0.7; transition:opacity 0.2s;
+  animation: growBar 1s ease both;
+}
+.mini-bar:hover { opacity:1; }
+.mini-bar.highlight { background:linear-gradient(to top, var(--gold), var(--gold-light)); opacity:1; }
+
+@keyframes growBar {
+  from { transform:scaleY(0); transform-origin:bottom; }
+  to { transform:scaleY(1); }
+}
+
+/* Donut */
+.donut-wrap { display:flex; align-items:center; gap:1rem; }
+.donut { position:relative; width:80px; height:80px; }
+.donut svg { transform:rotate(-90deg); }
+.donut-center {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem; font-weight:700; line-height:1;
+}
+.donut-center small { font-size:0.55rem; color:var(--text-muted); font-family:'DM Sans',sans-serif; }
+.donut-legend { display:flex; flex-direction:column; gap:0.4rem; }
+.legend-item { display:flex; align-items:center; gap:0.4rem; font-size:0.65rem; color:var(--text-muted); }
+.legend-dot { width:7px;height:7px;border-radius:50%;flex-shrink:0; }
+
+/* Appointments table */
+.appts-card {
+  background:var(--glass); border:1px solid var(--border);
+  border-radius:10px; overflow:hidden;
+}
+.appts-header {
+  padding:0.7rem 1rem; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.appts-title { font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; }
+.appts-badge { background:rgba(10,124,110,0.2); color:var(--teal-light); font-size:0.62rem; padding:0.2rem 0.5rem; border-radius:100px; }
+
+.appt-row {
+  display:grid; grid-template-columns:1.5fr 1fr 1fr 0.8fr 0.8fr;
+  gap:0.5rem; align-items:center;
+  padding:0.6rem 1rem; border-bottom:1px solid rgba(18,160,143,0.05);
+  font-size:0.72rem;
+  transition:background 0.15s;
+}
+.appt-row:hover { background:rgba(18,160,143,0.04); }
+.appt-row.header { color:var(--text-muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:0.05em; }
+.appt-row.header:hover { background:transparent; }
+
+.appt-name { font-weight:500; color:var(--text); }
+.appt-time { font-family:'JetBrains Mono',monospace; color:var(--text-muted); font-size:0.68rem; }
+.appt-type { color:var(--text-muted); }
+
+.status-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:0.18rem 0.55rem; border-radius:100px;
+  font-size:0.62rem; font-weight:500;
+}
+.status-badge.confirmed { background:rgba(76,175,138,0.15); color:#4CAF8A; }
+.status-badge.pending { background:rgba(200,151,58,0.15); color:var(--gold-light); }
+.status-badge.done { background:rgba(139,189,181,0.1); color:var(--text-muted); }
+
+/* ── FEATURES ── */
+section { padding:6rem 4rem; }
+
+.section-label {
+  font-size:0.75rem; font-weight:500; color:var(--teal-light);
+  letter-spacing:0.12em; text-transform:uppercase;
+  margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;
+}
+.section-label::before {
+  content:''; width:24px; height:1px; background:var(--teal-light);
+}
+
+.section-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem, 4vw, 3rem);
+  font-weight:600; line-height:1.15; letter-spacing:-0.02em;
+  max-width:600px; margin-bottom:1rem;
+}
+
+.section-sub { color:var(--text-muted); font-size:1rem; line-height:1.7; max-width:500px; margin-bottom:3rem; }
+
+.features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; max-width:1100px; margin:0 auto; }
+
+.feat-card {
+  background:var(--card-bg); border:1px solid var(--border);
+  border-radius:14px; padding:2rem;
+  transition:transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  position:relative; overflow:hidden;
+}
+.feat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, transparent, var(--teal), transparent);
+  opacity:0; transition:opacity 0.3s;
+}
+.feat-card:hover { transform:translateY(-4px); border-color:rgba(18,160,143,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+.feat-card:hover::before { opacity:1; }
+
+.feat-icon {
+  width:48px; height:48px; border-radius:10px;
+  background:rgba(10,124,110,0.15); border:1px solid rgba(18,160,143,0.2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; margin-bottom:1.2rem;
+}
+
+.feat-title { font-size:1.05rem; font-weight:600; margin-bottom:0.6rem; }
+.feat-desc { font-size:0.875rem; color:var(--text-muted); line-height:1.65; }
+.feat-tag {
+  display:inline-block; margin-top:1rem;
+  font-size:0.68rem; font-weight:500; color:var(--gold-light);
+  background:rgba(200,151,58,0.1); border:1px solid rgba(200,151,58,0.2);
+  padding:0.2rem 0.6rem; border-radius:4px; letter-spacing:0.04em;
+}
+
+/* ── PRICING ── */
+.pricing-section { text-align:center; }
+.pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; max-width:960px; margin:0 auto; }
+
+.price-card {
+  background:var(--card-bg); border:1px solid var(--border);
+  border-radius:16px; padding:2.5rem 2rem;
+  position:relative; transition:transform 0.2s;
+  text-align:left;
+}
+.price-card:hover { transform:translateY(-4px); }
+
+.price-card.featured {
+  border-color:var(--teal);
+  background:linear-gradient(135deg, rgba(10,124,110,0.15), rgba(13,31,28,0.9));
+  box-shadow:0 0 0 1px var(--teal), 0 20px 60px rgba(10,124,110,0.2);
+}
+
+.price-badge {
+  position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff; font-size:0.68rem; font-weight:600; padding:0.3rem 1rem;
+  border-radius:100px; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap;
+}
+
+.price-plan { font-size:0.75rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.8rem; }
+.price-amount {
+  font-family:'Cormorant Garamond',serif;
+  font-size:3rem; font-weight:700; line-height:1; margin-bottom:0.3rem;
+}
+.price-amount sup { font-size:1.2rem; vertical-align:top; margin-top:0.5rem; display:inline-block; }
+.price-amount span { font-size:1rem; font-weight:400; color:var(--text-muted); }
+.price-desc { font-size:0.8rem; color:var(--text-muted); margin-bottom:2rem; }
+
+.price-features { display:flex; flex-direction:column; gap:0.8rem; margin-bottom:2rem; }
+.price-feat {
+  display:flex; align-items:center; gap:0.7rem;
+  font-size:0.82rem; color:var(--text-muted);
+}
+.price-feat .check { color:var(--teal-light); font-size:0.9rem; }
+.price-feat.unavail { opacity:0.4; }
+.price-feat.unavail .check { color:var(--text-muted); }
+
+.btn-plan {
+  width:100%; padding:0.85rem; border-radius:8px;
+  font-family:'DM Sans',sans-serif; font-size:0.875rem; font-weight:600;
+  cursor:pointer; transition:all 0.2s;
+}
+.btn-plan.outline {
+  background:transparent; color:var(--text);
+  border:1px solid rgba(255,255,255,0.15);
+}
+.btn-plan.outline:hover { border-color:var(--teal-light); }
+.btn-plan.solid {
+  background:linear-gradient(135deg,var(--teal),var(--teal-light));
+  color:#fff; border:none;
+  box-shadow:0 4px 16px rgba(10,124,110,0.3);
+}
+.btn-plan.solid:hover { box-shadow:0 8px 24px rgba(10,124,110,0.4); transform:translateY(-1px); }
+
+/* ── TESTIMONIALS ── */
+.testimonials-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; max-width:1100px; margin:0 auto; }
+
+.testi-card {
+  background:var(--card-bg); border:1px solid var(--border);
+  border-radius:14px; padding:2rem;
+  transition:transform 0.2s;
+}
+.testi-card:hover { transform:translateY(-3px); }
+
+.testi-stars { display:flex; gap:3px; color:var(--gold-light); font-size:0.9rem; margin-bottom:1rem; }
+.testi-quote { font-size:0.875rem; line-height:1.7; color:var(--text-muted); margin-bottom:1.5rem; font-style:italic; }
+.testi-author { display:flex; align-items:center; gap:0.8rem; }
+.testi-avatar {
+  width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; font-weight:600; font-family:'Cormorant Garamond',serif;
+  border:1px solid var(--border);
+}
+.testi-name { font-size:0.875rem; font-weight:600; }
+.testi-role { font-size:0.72rem; color:var(--text-muted); margin-top:0.1rem; }
+
+/* ── CTA ── */
+.cta-section {
+  text-align:center; padding:6rem 2rem;
+  background:linear-gradient(135deg, rgba(10,124,110,0.1), rgba(13,31,28,0.8));
+  margin:0 4rem 4rem; border-radius:24px;
+  border:1px solid rgba(18,160,143,0.2);
+  position:relative; overflow:hidden;
+}
+.cta-section::before {
+  content:''; position:absolute; top:-50%; left:-50%; right:-50%; bottom:-50%;
+  background:radial-gradient(ellipse at center, rgba(10,124,110,0.08) 0%, transparent 60%);
+  pointer-events:none;
+}
+
+.cta-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:600; margin-bottom:1rem; letter-spacing:-0.02em;
+}
+.cta-sub { font-size:1rem; color:var(--text-muted); margin-bottom:2.5rem; }
+.cta-input-row { display:flex; gap:0.8rem; justify-content:center; align-items:center; }
+.cta-input {
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+  color:var(--text); padding:0.9rem 1.5rem; border-radius:8px;
+  font-family:'DM Sans',sans-serif; font-size:0.9rem; width:300px;
+  outline:none; transition:border-color 0.2s;
+}
+.cta-input::placeholder { color:var(--text-muted); }
+.cta-input:focus { border-color:var(--teal-light); }
+
+/* ── FOOTER ── */
+footer {
+  border-top:1px solid var(--border);
+  padding:3rem 4rem 2rem;
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem;
+}
+
+.footer-brand .logo { font-size:1.5rem; margin-bottom:0.8rem; display:block; }
+.footer-brand p { font-size:0.82rem; color:var(--text-muted); line-height:1.6; max-width:250px; }
+
+.footer-col h4 { font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:1rem; }
+.footer-col a { display:block; font-size:0.82rem; color:var(--text-muted); text-decoration:none; margin-bottom:0.5rem; transition:color 0.2s; }
+.footer-col a:hover { color:var(--text); }
+
+.footer-bottom {
+  margin-top:2rem; padding-top:2rem; border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:0.75rem; color:var(--text-muted);
+  padding-left:4rem; padding-right:4rem; padding-bottom:1.5rem;
+}
+
+/* ── TRANSITIONS ── */
+.fade-section {
+  opacity:0; transform:translateY(30px);
+  transition:opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-section.visible { opacity:1; transform:none; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px) {
+  nav { padding:1rem 1.5rem; }
+  .nav-links { display:none; }
+  section { padding:4rem 1.5rem; }
+  .features-grid { grid-template-columns:1fr; }
+  .pricing-grid { grid-template-columns:1fr; }
+  .testimonials-grid { grid-template-columns:1fr; }
+  footer { grid-template-columns:1fr; padding:2rem 1.5rem; }
+  .footer-bottom { padding:1rem 1.5rem; flex-direction:column; gap:0.5rem; text-align:center; }
+  .cta-section { margin:0 1.5rem 2rem; }
+  .cta-input-row { flex-direction:column; }
+  .cta-input { width:100%; max-width:400px; }
+  .kpi-grid { grid-template-columns:repeat(2,1fr); }
+  .charts-row { grid-template-columns:1fr; }
+  .dash-sidebar { display:none; }
+  .dashboard-preview { padding:2rem 1.5rem; }
+  h1 { font-size:2.5rem; }
+  .hero-stats { gap:1.5rem; }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Denta<span>Cloud</span></div>
+  <div class="nav-links">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#testimonials">Témoignages</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <button class="btn-nav" onclick="window.location.href='inscription.html'">Essai Gratuit 30j →</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Conçu pour l'Algérie · DZD · Arabe & Français
+  </div>
+
+  <h1>La plateforme <em>tout-en-un</em><br>pour votre clinique dentaire</h1>
+
+  <p class="hero-sub">Gérez vos rendez-vous, dossiers patients, facturation et stock — en arabe et en français, adapté aux PME algériennes.</p>
+
+  <div class="hero-ctas">
+    <button class="btn-primary" onclick="window.location.href='inscription.html'">Démarrer gratuitement</button>
+    <button class="btn-secondary">▶ Voir la démo</button>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">+<span>380</span></div>
+      <div class="stat-label">Cliniques actives</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num"><span>98</span>%</div>
+      <div class="stat-label">Satisfaction client</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num"><span>24</span>h</div>
+      <div class="stat-label">Support local</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">+<span>12K</span></div>
+      <div class="stat-label">Patients gérés</div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD PREVIEW -->
+<div class="dashboard-preview fade-section">
+  <div class="dash-wrapper">
+    <div class="dash-topbar">
+      <div class="dash-dots">
+        <div class="dash-dot"></div><div class="dash-dot"></div><div class="dash-dot"></div>
+      </div>
+      <div class="dash-url">app.dentacloud.dz/dashboard</div>
+      <div style="width:60px"></div>
+    </div>
+    <div class="dash-body">
+      <div class="dash-sidebar">
+        <div class="dash-logo-s">Denta<span>Cloud</span></div>
+        <div class="dash-menu-item active"><span class="dash-menu-icon">📊</span>Tableau de bord</div>
+        <div class="dash-menu-item"><span class="dash-menu-icon">📅</span>Rendez-vous</div>
+        <div class="dash-menu-item"><span class="dash-menu-icon">👤</span>Patients</div>
+        <div class="dash-menu-item"><span class="dash-menu-icon">🦷</span>Dossiers</div>
+        <div class="dash-menu-item"><span class="dash-menu-icon">💊</span>Stock</div>
+        <div class="dash-menu-item"><span class="dash-menu-icon">💰</span>Facturation</div>
+        <div class="dash-menu-item"><span class="dash-menu-icon">📈</span>Rapports</div>
+        <div class="dash-menu-item"><span class="dash-menu-icon">⚙️</span>Paramètres</div>
+      </div>
+      <div class="dash-main">
+        <div class="dash-header-row">
+          <div class="dash-title">Bonjour Dr. Amira 👋</div>
+          <div class="dash-date">Mar 10, 2026 · 09:14</div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">RDV Aujourd'hui</div>
+            <div class="kpi-value">14</div>
+            <div class="kpi-delta up">↑ 3 vs hier</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Recettes (DZD)</div>
+            <div class="kpi-value">87K</div>
+            <div class="kpi-delta up">↑ 12% ce mois</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Nouveaux Patients</div>
+            <div class="kpi-value">6</div>
+            <div class="kpi-delta up">↑ 2 vs sem. passée</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Stock Critique</div>
+            <div class="kpi-value">3</div>
+            <div class="kpi-delta down">⚠ articles faibles</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Activité — 7 derniers jours</div>
+            <div class="mini-bars">
+              <div class="mini-bar" style="height:35%;animation-delay:0s"></div>
+              <div class="mini-bar" style="height:55%;animation-delay:0.1s"></div>
+              <div class="mini-bar" style="height:40%;animation-delay:0.2s"></div>
+              <div class="mini-bar" style="height:75%;animation-delay:0.3s"></div>
+              <div class="mini-bar" style="height:60%;animation-delay:0.4s"></div>
+              <div class="mini-bar highlight" style="height:90%;animation-delay:0.5s"></div>
+              <div class="mini-bar" style="height:70%;animation-delay:0.6s"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;">
+              <span style="font-size:0.6rem;color:var(--text-muted)">Lun</span>
+              <span style="font-size:0.6rem;color:var(--text-muted)">Mar</span>
+              <span style="font-size:0.6rem;color:var(--text-muted)">Mer</span>
+              <span style="font-size:0.6rem;color:var(--text-muted)">Jeu</span>
+              <span style="font-size:0.6rem;color:var(--text-muted)">Ven</span>
+              <span style="font-size:0.6rem;color:var(--gold-light)">Sam</span>
+              <span style="font-size:0.6rem;color:var(--text-muted)">Dim</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Types de soins</div>
+            <div class="donut-wrap">
+              <div class="donut">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(18,160,143,0.1)" stroke-width="12"/>
+                  <circle cx="40" cy="40" r="30" fill="none" stroke="var(--teal-light)" stroke-width="12"
+                    stroke-dasharray="113 75" stroke-dashoffset="0"/>
+                  <circle cx="40" cy="40" r="30" fill="none" stroke="var(--gold-light)" stroke-width="12"
+                    stroke-dasharray="45 143" stroke-dashoffset="-113"/>
+                  <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(139,189,181,0.4)" stroke-width="12"
+                    stroke-dasharray="30 158" stroke-dashoffset="-158"/>
+                </svg>
+                <div class="donut-center">60%<small>Soins</small></div>
+              </div>
+              <div class="donut-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--teal-light)"></div>Soins 60%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--gold-light)"></div>Orthodontie 24%</div>
+                <div class="legend-item"><div class="legend-dot" style="background:rgba(139,189,181,0.6)"></div>Autres 16%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointments -->
+        <div class="appts-card">
+          <div class="appts-header">
+            <span class="appts-title">Prochains rendez-vous</span>
+            <span class="appts-badge">14 aujourd'hui</span>
+          </div>
+          <div class="appt-row header">
+            <span>Patient</span><span>Heure</span><span>Soin</span><span>Médecin</span><span>Statut</span>
+          </div>
+          <div class="appt-row">
+            <span class="appt-name">Karim Benamara</span>
+            <span class="appt-time">09:30</span>
+            <span class="appt-type">Détartrage</span>
+            <span style="font-size:0.68rem;color:var(--text-muted)">Dr. Amira</span>
+            <span class="status-badge confirmed">● Confirmé</span>
+          </div>
+          <div class="appt-row">
+            <span class="appt-name">Fatima Oukil</span>
+            <span class="appt-time">10:00</span>
+            <span class="appt-type">Carie</span>
+            <span style="font-size:0.68rem;color:var(--text-muted)">Dr. Amira</span>
+            <span class="status-badge pending">● En attente</span>
+          </div>
+          <div class="appt-row">
+            <span class="appt-name">Ahmed Meziane</span>
+            <span class="appt-time">11:15</span>
+            <span class="appt-type">Orthodontie</span>
+            <span style="font-size:0.68rem;color:var(--text-muted)">Dr. Yacine</span>
+            <span class="status-badge confirmed">● Confirmé</span>
+          </div>
+          <div class="appt-row">
+            <span class="appt-name">Nadia Bensalem</span>
+            <span class="appt-time">08:00</span>
+            <span class="appt-type">Extraction</span>
+            <span style="font-size:0.68rem;color:var(--text-muted)">Dr. Amira</span>
+            <span class="status-badge done">✓ Terminé</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features" class="fade-section">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-label">Fonctionnalités</div>
+    <h2 class="section-title">Tout ce dont votre clinique a besoin</h2>
+    <p class="section-sub">Une solution complète pensée pour les cliniques dentaires algériennes — de la prise de rendez-vous à la comptabilité.</p>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📅</div>
+        <div class="feat-title">Gestion des Rendez-vous</div>
+        <div class="feat-desc">Agenda intelligent en temps réel, rappels SMS automatiques aux patients, gestion de plusieurs dentistes et cabinets en simultané.</div>
+        <span class="feat-tag">Rappel SMS</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🦷</div>
+        <div class="feat-title">Dossiers Patients Digitaux</div>
+        <div class="feat-desc">Schéma dentaire interactif, historique complet des soins, radiographies et ordonnances stockés en toute sécurité dans le cloud.</div>
+        <span class="feat-tag">Schéma 3D</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💰</div>
+        <div class="feat-title">Facturation & Caisse</div>
+        <div class="feat-desc">Devis, factures conformes à la législation algérienne, gestion des paiements en DZD, intégration CNAS/CASNOS.</div>
+        <span class="feat-tag">Conformité DZD</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💊</div>
+        <div class="feat-title">Gestion des Stocks</div>
+        <div class="feat-desc">Suivi des consommables dentaires, alertes de rupture de stock, historique des commandes fournisseurs algériens.</div>
+        <span class="feat-tag">Alertes Automatiques</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Rapports & Analytics</div>
+        <div class="feat-desc">Tableaux de bord sur les recettes, taux d'occupation, satisfaction patients et performance par médecin.</div>
+        <span class="feat-tag">Temps Réel</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔒</div>
+        <div class="feat-title">Sécurité & Conformité</div>
+        <div class="feat-desc">Données hébergées en Algérie, chiffrement AES-256, conformité ANDPPT, sauvegardes quotidiennes automatiques.</div>
+        <span class="feat-tag">Hébergé en Algérie</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🌐</div>
+        <div class="feat-title">Bilingue Arabe / Français</div>
+        <div class="feat-desc">Interface entièrement disponible en arabe (RTL) et en français, ordonnances et rapports dans les deux langues.</div>
+        <span class="feat-tag">RTL Support</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📱</div>
+        <div class="feat-title">Application Mobile</div>
+        <div class="feat-desc">Application iOS et Android pour consulter son agenda, valider des RDV et recevoir des notifications n'importe où.</div>
+        <span class="feat-tag">iOS & Android</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤝</div>
+        <div class="feat-title">Support Local Dédié</div>
+        <div class="feat-desc">Équipe basée en Algérie, support en arabe et français, formation et accompagnement à l'installation inclus.</div>
+        <span class="feat-tag">Oran · Alger · Annaba</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="pricing-section fade-section" style="background:rgba(0,0,0,0.2);">
+  <div class="section-label" style="justify-content:center">Tarifs</div>
+  <h2 class="section-title" style="margin:0 auto 0.8rem; text-align:center">Tarifs transparents en DZD</h2>
+  <p class="section-sub" style="margin:0 auto 3rem;text-align:center">Aucun frais caché. Facturation mensuelle ou annuelle. Annulation libre.</p>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-plan">Starter</div>
+      <div class="price-amount"><sup>DZD</sup>4 900<span>/mois</span></div>
+      <div class="price-desc">Idéal pour cabinet solo</div>
+      <div class="price-features">
+        <div class="price-feat"><span class="check">✓</span>1 dentiste</div>
+        <div class="price-feat"><span class="check">✓</span>Agenda & Rendez-vous</div>
+        <div class="price-feat"><span class="check">✓</span>Dossiers patients illimités</div>
+        <div class="price-feat"><span class="check">✓</span>Facturation simple</div>
+        <div class="price-feat"><span class="check">✓</span>100 SMS / mois</div>
+        <div class="price-feat unavail"><span class="check">—</span>Gestion multi-praticiens</div>
+        <div class="price-feat unavail"><span class="check">—</span>Rapports avancés</div>
+      </div>
+      <button class="btn-plan outline" onclick="window.location.href='inscription.html'">Commencer →</button>
+    </div>
+
+    <div class="price-card featured">
+      <div class="price-badge">⭐ Le plus populaire</div>
+      <div class="price-plan">Clinique Pro</div>
+      <div class="price-amount"><sup>DZD</sup>9 900<span>/mois</span></div>
+      <div class="price-desc">Pour cliniques multi-praticiens</div>
+      <div class="price-features">
+        <div class="price-feat"><span class="check">✓</span>Jusqu'à 5 dentistes</div>
+        <div class="price-feat"><span class="check">✓</span>Tout Starter inclus</div>
+        <div class="price-feat"><span class="check">✓</span>Gestion des stocks</div>
+        <div class="price-feat"><span class="check">✓</span>Intégration CNAS/CASNOS</div>
+        <div class="price-feat"><span class="check">✓</span>500 SMS / mois</div>
+        <div class="price-feat"><span class="check">✓</span>Rapports & analytics</div>
+        <div class="price-feat"><span class="check">✓</span>Application mobile</div>
+      </div>
+      <button class="btn-plan solid" onclick="window.location.href='inscription.html'">Commencer →</button>
+    </div>
+
+    <div class="price-card">
+      <div class="price-plan">Réseau</div>
+      <div class="price-amount"><sup>DZD</sup>24 900<span>/mois</span></div>
+      <div class="price-desc">Pour groupes de cliniques</div>
+      <div class="price-features">
+        <div class="price-feat"><span class="check">✓</span>Praticiens illimités</div>
+        <div class="price-feat"><span class="check">✓</span>Tout Pro inclus</div>
+        <div class="price-feat"><span class="check">✓</span>Multi-établissements</div>
+        <div class="price-feat"><span class="check">✓</span>API & intégrations</div>
+        <div class="price-feat"><span class="check">✓</span>SMS illimités</div>
+        <div class="price-feat"><span class="check">✓</span>Manager de compte dédié</div>
+        <div class="price-feat"><span class="check">✓</span>SLA 99.9% garanti</div>
+      </div>
+      <button class="btn-plan outline" onclick="window.location.href='inscription.html'">Contacter →</button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials" class="fade-section">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-label">Témoignages</div>
+    <h2 class="section-title">Ce que disent nos cliniques</h2>
+    <p class="section-sub" style="margin-bottom:3rem">Des dentistes de tout l'Algérie nous font confiance chaque jour.</p>
+
+    <div class="testimonials-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"DentaCloud a transformé notre clinique. Nous avons réduit les rendez-vous manqués de 40% grâce aux rappels SMS. Le support en arabe est vraiment appréciable."</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:rgba(10,124,110,0.2);color:var(--teal-light)">AM</div>
+          <div>
+            <div class="testi-name">Dr. Amel Mekki</div>
+            <div class="testi-role">Clinique Dentaire Sétif</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"La gestion des stocks et la facturation CNAS m'économisent 2h par jour. L'interface est claire et mon assistante a été formée en 1 heure seulement."</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:rgba(200,151,58,0.2);color:var(--gold-light)">YB</div>
+          <div>
+            <div class="testi-name">Dr. Yacine Boudiaf</div>
+            <div class="testi-role">Cabinet Privé, Oran</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"Nous gérons 3 cliniques avec DentaCloud Réseau. Les rapports consolidés et la visibilité en temps réel sur toutes nos activités sont inestimables."</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:rgba(139,189,181,0.15);color:var(--text-muted)">SH</div>
+          <div>
+            <div class="testi-name">Dr. Salima Hadj-Ali</div>
+            <div class="testi-role">Groupe DentaAlger, Alger</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section fade-section" id="contact">
+  <h2 class="cta-title">Prêt à digitaliser<br>votre clinique ?</h2>
+  <p class="cta-sub">30 jours d'essai gratuit. Aucune carte bancaire requise. Installation en moins de 24h.</p>
+  <div class="cta-input-row">
+    <input class="cta-input" type="email" placeholder="votre@email.com">
+    <button class="btn-primary">Démarrer gratuitement →</button>
+  </div>
+  <p style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem">✓ Essai gratuit 30j · ✓ Sans engagement · ✓ Support inclus</p>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <span class="logo">Denta<span>Cloud</span></span>
+    <p>La première plateforme SaaS dédiée aux cliniques dentaires algériennes. Conçu en Algérie, pour l'Algérie.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Produit</h4>
+    <a href="#">Fonctionnalités</a>
+    <a href="#">Tarifs</a>
+    <a href="#">Démo</a>
+    <a href="#">Mises à jour</a>
+  </div>
+  <div class="footer-col">
+    <h4>Ressources</h4>
+    <a href="#">Documentation</a>
+    <a href="#">Blog</a>
+    <a href="#">Formation</a>
+    <a href="#">API</a>
+  </div>
+  <div class="footer-col">
+    <h4>Contact</h4>
+    <a href="#">Alger</a>
+    <a href="#">Oran</a>
+    <a href="#">Annaba</a>
+    <a href="#">Support: 0800-DENTA</a>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2026 DentaCloud SARL — Oran, Algérie</span>
+  <span>Conformité ANDPPT · Données hébergées en Algérie</span>
+</div>
+
+<!-- MODAL INSCRIPTION -->
+<div id="modalOverlay" style="
+  display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+  align-items:center; justify-content:center; padding:1rem;
+">
+  <div style="
+    background:rgba(19,36,32,0.98); border:1px solid rgba(18,160,143,0.3);
+    border-radius:20px; padding:2.5rem; width:100%; max-width:520px;
+    position:relative; box-shadow:0 40px 100px rgba(0,0,0,0.5);
+    max-height:90vh; overflow-y:auto;
+  ">
+    <!-- Bouton fermer -->
+    <button onclick="fermerModal()" style="
+      position:absolute; top:1rem; right:1rem;
+      background:rgba(255,255,255,0.08); border:none; color:#8BBDB5;
+      width:32px; height:32px; border-radius:50%; cursor:pointer;
+      font-size:1.1rem; display:flex; align-items:center; justify-content:center;
+      transition:background 0.2s;
+    " onmouseover="this.style.background='rgba(255,255,255,0.15)'"
+       onmouseout="this.style.background='rgba(255,255,255,0.08)'">✕</button>
+
+    <!-- Formulaire -->
+    <div id="modalFormScreen">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;text-align:center;margin-bottom:0.3rem;">
+        Denta<span style="color:#12A08F">Cloud</span>
+      </div>
+      <p style="text-align:center;color:#8BBDB5;font-size:0.875rem;margin-bottom:1.5rem;">
+        Plateforme SaaS pour cliniques dentaires
+      </p>
+      <div style="
+        display:inline-flex;align-items:center;gap:0.4rem;
+        background:rgba(10,124,110,0.15);border:1px solid rgba(18,160,143,0.3);
+        border-radius:100px;padding:0.35rem 1rem;font-size:0.72rem;
+        color:#12A08F;font-weight:500;margin:0 auto 1.5rem;display:flex;width:fit-content;
+      ">
+        <span style="width:6px;height:6px;border-radius:50%;background:#12A08F;animation:pulse 2s infinite;"></span>
+        Essai gratuit 30 jours — Sans carte bancaire
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;">
+
+        <div style="display:flex;flex-direction:column;gap:0.35rem;">
+          <label style="font-size:0.72rem;font-weight:500;color:#8BBDB5;text-transform:uppercase;letter-spacing:0.04em;">Nom du médecin *</label>
+          <input id="m_medecin" type="text" placeholder="Dr. Ahmed Benali" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem 0.9rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;transition:border-color 0.2s;" onfocus="this.style.borderColor='#12A08F'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.35rem;">
+          <label style="font-size:0.72rem;font-weight:500;color:#8BBDB5;text-transform:uppercase;letter-spacing:0.04em;">Nom de la clinique *</label>
+          <input id="m_nom" type="text" placeholder="Clinique Dentaire Oran" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem 0.9rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;transition:border-color 0.2s;" onfocus="this.style.borderColor='#12A08F'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.35rem;">
+          <label style="font-size:0.72rem;font-weight:500;color:#8BBDB5;text-transform:uppercase;letter-spacing:0.04em;">Email *</label>
+          <input id="m_email" type="email" placeholder="contact@clinique.dz" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem 0.9rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;transition:border-color 0.2s;" onfocus="this.style.borderColor='#12A08F'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.35rem;">
+          <label style="font-size:0.72rem;font-weight:500;color:#8BBDB5;text-transform:uppercase;letter-spacing:0.04em;">Téléphone *</label>
+          <input id="m_telephone" type="tel" placeholder="0550 000 000" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem 0.9rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;transition:border-color 0.2s;" onfocus="this.style.borderColor='#12A08F'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.35rem;">
+          <label style="font-size:0.72rem;font-weight:500;color:#8BBDB5;text-transform:uppercase;letter-spacing:0.04em;">Wilaya *</label>
+          <select id="m_wilaya" style="background:#132420;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem 0.9rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;">
+            <option value="">Choisir...</option>
+            <option>Adrar</option><option>Chlef</option><option>Laghouat</option><option>Oum El Bouaghi</option><option>Batna</option><option>Béjaïa</option><option>Biskra</option><option>Béchar</option><option>Blida</option><option>Bouira</option><option>Tamanrasset</option><option>Tébessa</option><option>Tlemcen</option><option>Tiaret</option><option>Tizi Ouzou</option><option>Alger</option><option>Djelfa</option><option>Jijel</option><option>Sétif</option><option>Saïda</option><option>Skikda</option><option>Sidi Bel Abbès</option><option>Annaba</option><option>Guelma</option><option>Constantine</option><option>Médéa</option><option>Mostaganem</option><option>M'Sila</option><option>Mascara</option><option>Ouargla</option><option>Oran</option><option>El Bayadh</option><option>Illizi</option><option>Bordj Bou Arréridj</option><option>Boumerdès</option><option>El Tarf</option><option>Tindouf</option><option>Tissemsilt</option><option>El Oued</option><option>Khenchela</option><option>Souk Ahras</option><option>Tipaza</option><option>Mila</option><option>Aïn Defla</option><option>Naâma</option><option>Aïn Témouchent</option><option>Ghardaïa</option><option>Relizane</option>
+          </select>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.35rem;">
+          <label style="font-size:0.72rem;font-weight:500;color:#8BBDB5;text-transform:uppercase;letter-spacing:0.04em;">Nb. dentistes</label>
+          <select id="m_nb" style="background:#132420;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem 0.9rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;">
+            <option value="1">1 dentiste (solo)</option>
+            <option value="2-5">2 à 5 dentistes</option>
+            <option value="+5">Plus de 5</option>
+          </select>
+        </div>
+
+        <!-- Plans -->
+        <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:0.35rem;">
+          <label style="font-size:0.72rem;font-weight:500;color:#8BBDB5;text-transform:uppercase;letter-spacing:0.04em;">Votre plan</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;">
+            <div onclick="selectPlan(this,'starter')" class="plan-btn" style="border:1px solid rgba(18,160,143,0.4);background:rgba(18,160,143,0.1);border-radius:8px;padding:0.6rem;text-align:center;cursor:pointer;transition:all 0.2s;">
+              <div style="font-size:0.78rem;font-weight:600;color:#12A08F;">Starter</div>
+              <div style="font-size:0.62rem;color:#12A08F;">4 900 DZD/mois</div>
+            </div>
+            <div onclick="selectPlan(this,'pro')" class="plan-btn" style="border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.6rem;text-align:center;cursor:pointer;transition:all 0.2s;">
+              <div style="font-size:0.78rem;font-weight:600;color:#F0F9F7;">⭐ Pro</div>
+              <div style="font-size:0.62rem;color:#8BBDB5;">9 900 DZD/mois</div>
+            </div>
+            <div onclick="selectPlan(this,'reseau')" class="plan-btn" style="border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.6rem;text-align:center;cursor:pointer;transition:all 0.2s;">
+              <div style="font-size:0.78rem;font-weight:600;color:#F0F9F7;">Réseau</div>
+              <div style="font-size:0.62rem;color:#8BBDB5;">24 900 DZD/mois</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div id="m_error" style="grid-column:1/-1;display:none;background:rgba(229,115,115,0.15);border:1px solid rgba(229,115,115,0.3);color:#E57373;padding:0.8rem;border-radius:8px;font-size:0.82rem;"></div>
+
+        <!-- Submit -->
+        <button id="m_btn" onclick="inscrireModal()" style="
+          grid-column:1/-1;
+          background:linear-gradient(135deg,#0A7C6E,#12A08F);
+          color:#fff;border:none;border-radius:10px;padding:1rem;
+          font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;
+          cursor:pointer;transition:all 0.2s;
+          box-shadow:0 4px 20px rgba(10,124,110,0.3);
+        ">Démarrer mon essai gratuit →</button>
+
+        <div style="grid-column:1/-1;text-align:center;font-size:0.72rem;color:#8BBDB5;">
+          <span style="color:#12A08F;">✓</span> 30 jours gratuits &nbsp;·&nbsp;
+          <span style="color:#12A08F;">✓</span> Sans engagement &nbsp;·&nbsp;
+          <span style="color:#12A08F;">✓</span> Support WhatsApp
+        </div>
+      </div>
+    </div>
+
+    <!-- Succès -->
+    <div id="modalSuccessScreen" style="display:none;text-align:center;padding:2rem 0;">
+      <div style="font-size:4rem;margin-bottom:1rem;animation:bounceIn 0.6s ease;">🦷</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;margin-bottom:0.5rem;">Mbrouk ! 🎉</div>
+      <p style="color:#8BBDB5;font-size:0.9rem;line-height:1.6;margin-bottom:1.5rem;">
+        Votre clinique a été enregistrée avec succès.<br>
+        Notre équipe vous contactera dans les <strong style="color:#F0F9F7;">24 heures</strong><br>
+        pour activer votre compte DentaCloud.
+      </p>
+      <a id="m_whatsapp" href="#" target="_blank" style="
+        display:inline-flex;align-items:center;gap:0.5rem;
+        background:#25D366;color:#fff;border:none;border-radius:10px;
+        padding:0.8rem 1.5rem;font-family:'DM Sans',sans-serif;
+        font-size:0.9rem;font-weight:600;text-decoration:none;
+        transition:all 0.2s;
+      ">📱 Nous contacter sur WhatsApp</a>
+      <p style="margin-top:1rem;font-size:0.75rem;color:#8BBDB5;">
+        Ou appelez-nous : <strong style="color:#12A08F;">0800-DENTA</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ── Supabase ──
+const { createClient } = supabase;
+const sbClient = createClient(
+  'https://rsefzvesepznxozgidcr.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+);
+
+let planChoisi = 'starter';
+
+function ouvrirModal() {
+  document.getElementById('modalOverlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function fermerModal() {
+  document.getElementById('modalOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function selectPlan(el, plan) {
+  planChoisi = plan;
+  document.querySelectorAll('.plan-btn').forEach(b => {
+    b.style.border = '1px solid rgba(255,255,255,0.1)';
+    b.style.background = 'transparent';
+    b.querySelectorAll('div').forEach(d => d.style.color = '#F0F9F7');
+    b.querySelectorAll('div')[1].style.color = '#8BBDB5';
+  });
+  el.style.border = '1px solid rgba(18,160,143,0.5)';
+  el.style.background = 'rgba(18,160,143,0.12)';
+  el.querySelectorAll('div').forEach(d => d.style.color = '#12A08F');
+}
+
+async function inscrireModal() {
+  const medecin   = document.getElementById('m_medecin').value.trim();
+  const nom       = document.getElementById('m_nom').value.trim();
+  const email     = document.getElementById('m_email').value.trim();
+  const telephone = document.getElementById('m_telephone').value.trim();
+  const wilaya    = document.getElementById('m_wilaya').value;
+
+  if (!medecin || !nom || !email || !telephone || !wilaya) {
+    showModalError('⚠️ Veuillez remplir tous les champs obligatoires.');
+    return;
+  }
+  if (!email.includes('@')) {
+    showModalError('⚠️ Adresse email invalide.');
+    return;
+  }
+
+  const btn = document.getElementById('m_btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:0.4rem;"></span> Inscription en cours...';
+
+  try {
+    const { error } = await sbClient
+      .from('cliniques')
+      .insert([{ nom, medecin, email, telephone, wilaya, plan: planChoisi }]);
+
+    if (error) {
+      showModalError(error.code === '23505'
+        ? '⚠️ Cet email est déjà inscrit.'
+        : '❌ Erreur : ' + error.message);
+      btn.disabled = false;
+      btn.innerHTML = 'Démarrer mon essai gratuit →';
+      return;
+    }
+
+    document.getElementById('modalFormScreen').style.display = 'none';
+    document.getElementById('modalSuccessScreen').style.display = 'block';
+    const msg = `Bonjour DentaCloud ! Je viens de m'inscrire.\nNom: ${medecin}\nClinique: ${nom}\nWilaya: ${wilaya}\nPlan: ${planChoisi}`;
+    document.getElementById('m_whatsapp').href = `https://wa.me/213550000000?text=${encodeURIComponent(msg)}`;
+
+  } catch(err) {
+    showModalError('❌ Erreur de connexion. Vérifiez votre internet.');
+    btn.disabled = false;
+    btn.innerHTML = 'Démarrer mon essai gratuit →';
+  }
+}
+
+function showModalError(msg) {
+  const el = document.getElementById('m_error');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+// Fermer en cliquant dehors
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) fermerModal();
+});
+
+// ── Scroll animation ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
+
+// ── Tous les boutons ouvrent le modal ──
+document.querySelectorAll('.btn-nav, .btn-primary, .btn-plan').forEach(btn => {
+  btn.onclick = ouvrirModal;
+});
+
+// CTA email button
+document.querySelector('.cta-section .btn-primary').addEventListener('click', ouvrirModal);
+</script>
+</body>
+</html>

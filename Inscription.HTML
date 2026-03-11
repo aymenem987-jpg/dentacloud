@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DentaCloud — Inscription</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --teal: #0A7C6E;
+  --teal-light: #12A08F;
+  --gold: #C8973A;
+  --dark: #0D1F1C;
+  --mid: #1E3530;
+  --text: #F0F9F7;
+  --text-muted: #8BBDB5;
+  --border: rgba(18,160,143,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(10,124,110,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(200,151,58,0.06) 0%, transparent 50%);
+  pointer-events:none;
+}
+
+.grid-bg {
+  position:fixed; inset:0; z-index:0; opacity:0.04;
+  background-image:
+    linear-gradient(rgba(18,160,143,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18,160,143,0.5) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events:none;
+}
+
+.card {
+  background: rgba(19,36,32,0.9);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3rem;
+  width: 100%;
+  max-width: 520px;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+}
+
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+.logo span { color: var(--teal-light); }
+
+.subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(10,124,110,0.15);
+  border: 1px solid rgba(18,160,143,0.3);
+  border-radius: 100px;
+  padding: 0.35rem 1rem;
+  font-size: 0.72rem;
+  color: var(--teal-light);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin: 0 auto 2rem;
+  display: flex;
+  width: fit-content;
+}
+
+.badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--teal-light);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; }
+  50% { opacity:0.4; }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+input, select {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+
+input::placeholder { color: rgba(139,189,181,0.4); }
+
+input:focus, select:focus {
+  border-color: var(--teal-light);
+  background: rgba(18,160,143,0.05);
+}
+
+select option { background: var(--dark); }
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 0.6rem;
+  grid-column: 1 / -1;
+}
+
+.plan-option { display: none; }
+
+.plan-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 0.5rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.plan-label:hover {
+  border-color: var(--teal-light);
+  background: rgba(18,160,143,0.05);
+}
+
+.plan-option:checked + .plan-label {
+  border-color: var(--teal-light);
+  background: rgba(18,160,143,0.15);
+  color: var(--teal-light);
+}
+
+.plan-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.plan-price {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.plan-option:checked + .plan-label .plan-price {
+  color: var(--teal-light);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+  grid-column: 1 / -1;
+}
+
+.btn-submit {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 1rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(10,124,110,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(10,124,110,0.4);
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.garantie {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+.garantie span { color: var(--teal-light); }
+
+/* Success & Error */
+.alert {
+  grid-column: 1 / -1;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  display: none;
+}
+
+.alert.success {
+  background: rgba(76,175,138,0.15);
+  border: 1px solid rgba(76,175,138,0.3);
+  color: #4CAF8A;
+}
+
+.alert.error {
+  background: rgba(229,115,115,0.15);
+  border: 1px solid rgba(229,115,115,0.3);
+  color: #E57373;
+}
+
+/* Success screen */
+.success-screen {
+  display: none;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounceIn 0.6s ease;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.success-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.success-msg {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.whatsapp-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+.login-link {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 1.5rem;
+}
+
+.login-link a {
+  color: var(--teal-light);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+@media(max-width:480px) {
+  .card { padding: 2rem 1.5rem; }
+  .form-grid { grid-template-columns: 1fr; }
+  .plan-grid { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: 1; }
+  .btn-submit { grid-column: 1; }
+  .alert { grid-column: 1; }
+  .garantie { grid-column: 1; }
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="card">
+  <!-- Form screen -->
+  <div id="formScreen">
+    <div class="logo">Denta<span>Cloud</span></div>
+    <p class="subtitle">Plateforme SaaS pour cliniques dentaires</p>
+
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Essai gratuit 30 jours — Sans carte bancaire
+    </div>
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>Prénom & Nom du médecin *</label>
+        <input type="text" id="medecin" placeholder="Dr. Ahmed Benali" required>
+      </div>
+
+      <div class="form-group">
+        <label>Nom de la clinique *</label>
+        <input type="text" id="nom" placeholder="Clinique Dentaire Oran" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="email" placeholder="contact@clinique.dz" required>
+      </div>
+
+      <div class="form-group">
+        <label>Téléphone *</label>
+        <input type="tel" id="telephone" placeholder="0550 000 000" required>
+      </div>
+
+      <div class="form-group">
+        <label>Wilaya *</label>
+        <select id="wilaya" required>
+          <option value="">Choisir une wilaya...</option>
+          <option>Adrar</option><option>Chlef</option><option>Laghouat</option>
+          <option>Oum El Bouaghi</option><option>Batna</option><option>Béjaïa</option>
+          <option>Biskra</option><option>Béchar</option><option>Blida</option>
+          <option>Bouira</option><option>Tamanrasset</option><option>Tébessa</option>
+          <option>Tlemcen</option><option>Tiaret</option><option>Tizi Ouzou</option>
+          <option>Alger</option><option>Djelfa</option><option>Jijel</option>
+          <option>Sétif</option><option>Saïda</option><option>Skikda</option>
+          <option>Sidi Bel Abbès</option><option>Annaba</option><option>Guelma</option>
+          <option>Constantine</option><option>Médéa</option><option>Mostaganem</option>
+          <option>M'Sila</option><option>Mascara</option><option>Ouargla</option>
+          <option>Oran</option><option>El Bayadh</option><option>Illizi</option>
+          <option>Bordj Bou Arréridj</option><option>Boumerdès</option>
+          <option>El Tarf</option><option>Tindouf</option><option>Tissemsilt</option>
+          <option>El Oued</option><option>Khenchela</option><option>Souk Ahras</option>
+          <option>Tipaza</option><option>Mila</option><option>Aïn Defla</option>
+          <option>Naâma</option><option>Aïn Témouchent</option><option>Ghardaïa</option>
+          <option>Relizane</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Nombre de dentistes</label>
+        <select id="nb_dentistes">
+          <option value="1">1 dentiste (solo)</option>
+          <option value="2-5">2 à 5 dentistes</option>
+          <option value="+5">Plus de 5 dentistes</option>
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label>Choisir votre plan</label>
+        <div class="plan-grid">
+          <div>
+            <input type="radio" name="plan" id="plan-starter" value="starter" class="plan-option" checked>
+            <label for="plan-starter" class="plan-label">
+              <div class="plan-name">Starter</div>
+              <div class="plan-price">4 900 DZD/mois</div>
+            </label>
+          </div>
+          <div>
+            <input type="radio" name="plan" id="plan-pro" value="pro" class="plan-option">
+            <label for="plan-pro" class="plan-label">
+              <div class="plan-name">⭐ Pro</div>
+              <div class="plan-price">9 900 DZD/mois</div>
+            </label>
+          </div>
+          <div>
+            <input type="radio" name="plan" id="plan-reseau" value="reseau" class="plan-option">
+            <label for="plan-reseau" class="plan-label">
+              <div class="plan-name">Réseau</div>
+              <div class="plan-price">24 900 DZD/mois</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert success" id="alertSuccess">✅ Inscription réussie !</div>
+      <div class="alert error" id="alertError">❌ Une erreur s'est produite.</div>
+
+      <button class="btn-submit" id="btnSubmit" onclick="inscrire()">
+        Démarrer mon essai gratuit →
+      </button>
+
+      <div class="garantie">
+        <span>✓</span> 30 jours gratuits &nbsp;·&nbsp;
+        <span>✓</span> Sans engagement &nbsp;·&nbsp;
+        <span>✓</span> Support WhatsApp inclus
+      </div>
+    </div>
+
+    <div class="login-link">
+      Déjà inscrit ? <a href="#">Se connecter</a>
+    </div>
+  </div>
+
+  <!-- Success screen -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">🦷</div>
+    <div class="success-title">Mbrouk ! 🎉</div>
+    <p class="success-msg">
+      Votre clinique a été enregistrée avec succès.<br>
+      Notre équipe vous contactera dans les <strong>24 heures</strong><br>
+      pour activer votre compte DentaCloud.
+    </p>
+    <a class="whatsapp-btn" id="whatsappBtn" href="#" target="_blank">
+      📱 Nous contacter sur WhatsApp
+    </a>
+    <p style="margin-top:1rem;font-size:0.75rem;color:var(--text-muted)">
+      Ou appelez-nous : <strong style="color:var(--teal-light)">0800-DENTA</strong>
+    </p>
+  </div>
+</div>
+
+<script>
+  // Connexion Supabase
+  const { createClient } = supabase;
+  const client = createClient(
+    'https://rsefzvesepznxozgidcr.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+  );
+
+  async function inscrire() {
+    const medecin   = document.getElementById('medecin').value.trim();
+    const nom       = document.getElementById('nom').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const telephone = document.getElementById('telephone').value.trim();
+    const wilaya    = document.getElementById('wilaya').value;
+    const plan      = document.querySelector('input[name="plan"]:checked').value;
+
+    // Validation
+    if (!medecin || !nom || !email || !telephone || !wilaya) {
+      showError('⚠️ Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      showError('⚠️ Adresse email invalide.');
+      return;
+    }
+
+    // Loading
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Inscription en cours...';
+
+    try {
+      const { data, error } = await client
+        .from('cliniques')
+        .insert([{ nom, medecin, email, telephone, wilaya, plan }]);
+
+      if (error) {
+        if (error.code === '23505') {
+          showError('⚠️ Cet email est déjà inscrit. Essayez de vous connecter.');
+        } else {
+          showError('❌ Erreur : ' + error.message);
+        }
+        btn.disabled = false;
+        btn.innerHTML = 'Démarrer mon essai gratuit →';
+        return;
+      }
+
+      // Succès !
+      document.getElementById('formScreen').style.display = 'none';
+      const ss = document.getElementById('successScreen');
+      ss.style.display = 'block';
+
+      // Lien WhatsApp avec infos pré-remplies
+      const msg = `Bonjour DentaCloud ! Je viens de m'inscrire.\nNom: ${medecin}\nClinique: ${nom}\nWilaya: ${wilaya}\nPlan: ${plan}`;
+      document.getElementById('whatsappBtn').href =
+        `https://wa.me/213550000000?text=${encodeURIComponent(msg)}`;
+
+    } catch (err) {
+      showError('❌ Erreur de connexion. Vérifiez votre internet.');
+      btn.disabled = false;
+      btn.innerHTML = 'Démarrer mon essai gratuit →';
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('alertError');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 4000);
+  }
+
+  // Enter key
+  document.addEventListener('keypress', e => {
+    if (e.key === 'Enter') inscrire();
+  });
+</script>
+</body>
+</html>
