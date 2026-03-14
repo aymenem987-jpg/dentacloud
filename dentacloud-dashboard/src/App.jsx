@@ -114,10 +114,23 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // Si l'URL contient ?nouveau=1, déconnecter l'utilisateur actuel
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('nouveau') === '1') {
+      supabase.auth.signOut().then(() => {
+        // Nettoyer l'URL
+        window.history.replaceState({}, '', window.location.pathname)
+        setSession(null)
+        setLoading(false)
+      })
+      return
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setLoading(false)
     })
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
@@ -143,36 +156,34 @@ export default function App() {
     <BrowserRouter>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#0D1F1C', color: '#F0F9F7', fontFamily: "'DM Sans', sans-serif" }}>
 
-        {/* Sidebar — desktop seulement */}
         {!isMobile && <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} userEmail={userEmail} handleLogout={handleLogout} />}
 
-        {/* Main */}
         <div style={{ flex: 1, marginLeft: isMobile ? 0 : (sidebarOpen ? '220px' : '64px'), transition: 'margin-left 0.3s ease', paddingBottom: isMobile ? '70px' : 0 }}>
 
-          {/* Topbar */}
           <div style={{
             padding: '0.8rem 1rem', borderBottom: '1px solid rgba(18,160,143,0.15)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             background: 'rgba(13,31,28,0.95)', backdropFilter: 'blur(10px)',
             position: 'sticky', top: 0, zIndex: 40
           }}>
-            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: isMobile ? '1.2rem' : '1rem', fontWeight: 700 }}>
-              {isMobile ? <>Denta<span style={{ color: '#12A08F' }}>Cloud</span></> : <span style={{ color: '#8BBDB5', fontSize: '0.875rem' }}>{new Date().toLocaleDateString('fr-DZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>}
+            <div>
+              {isMobile
+                ? <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem', fontWeight: 700 }}>Denta<span style={{ color: '#12A08F' }}>Cloud</span></span>
+                : <span style={{ color: '#8BBDB5', fontSize: '0.875rem' }}>{new Date().toLocaleDateString('fr-DZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              }
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
               <div style={{ position: 'relative' }}>
                 <span style={{ fontSize: '1.2rem', cursor: 'pointer' }}>🔔</span>
                 <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#C8973A', color: '#fff', fontSize: '0.55rem', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>3</span>
               </div>
-              {isMobile ? (
-                <button onClick={handleLogout} style={{ background: 'rgba(229,115,115,0.1)', border: '1px solid rgba(229,115,115,0.2)', color: '#E57373', borderRadius: '8px', padding: '0.3rem 0.7rem', fontSize: '0.72rem', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>🚪</button>
-              ) : (
-                <div style={{ background: 'rgba(18,160,143,0.1)', border: '1px solid rgba(18,160,143,0.2)', borderRadius: '100px', padding: '0.3rem 0.8rem', fontSize: '0.75rem', color: '#12A08F' }}>● En ligne</div>
-              )}
+              {isMobile
+                ? <button onClick={handleLogout} style={{ background: 'rgba(229,115,115,0.1)', border: '1px solid rgba(229,115,115,0.2)', color: '#E57373', borderRadius: '8px', padding: '0.3rem 0.7rem', fontSize: '0.72rem', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>🚪</button>
+                : <div style={{ background: 'rgba(18,160,143,0.1)', border: '1px solid rgba(18,160,143,0.2)', borderRadius: '100px', padding: '0.3rem 0.8rem', fontSize: '0.75rem', color: '#12A08F' }}>● En ligne</div>
+              }
             </div>
           </div>
 
-          {/* Pages */}
           <div style={{ padding: isMobile ? '1rem' : '2rem' }}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
@@ -184,7 +195,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Bottom nav — mobile seulement */}
         {isMobile && <BottomNav />}
       </div>
     </BrowserRouter>
