@@ -1195,7 +1195,7 @@ async function inscrireModal() {
   btn.disabled = true;
   btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:0.4rem;"></span> Inscription en cours...';
 
-  try {
+    try {
     const { error } = await sbClient
       .from('cliniques')
       .insert([{ nom, medecin, email, telephone, wilaya, plan: planChoisi }]);
@@ -1208,6 +1208,64 @@ async function inscrireModal() {
       btn.innerHTML = 'Démarrer mon essai gratuit →';
       return;
     }
+
+    // ── Emails automatiques via Resend ──
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi'
+      },
+      body: JSON.stringify({
+        from: 'DentaCloud <onboarding@resend.dev>',
+        to: [email],
+        subject: '🦷 Bienvenue sur DentaCloud !',
+        html: `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0D1F1C;color:#F0F9F7;padding:2rem;border-radius:12px;">
+            <h1 style="font-size:2rem;color:#12A08F;">Bienvenue sur DentaCloud 🦷</h1>
+            <p>Bonjour <strong>${medecin}</strong>,</p>
+            <p>Votre clinique <strong>${nom}</strong> a été enregistrée avec succès !</p>
+            <p>Voici vos informations :</p>
+            <ul>
+              <li>Plan : <strong>${planChoisi}</strong></li>
+              <li>Wilaya : <strong>${wilaya}</strong></li>
+            </ul>
+            <a href="https://dentacloud.vercel.app?nouveau=1" style="display:inline-block;background:linear-gradient(135deg,#0A7C6E,#12A08F);color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;margin-top:1rem;">
+              🚀 Accéder à mon Dashboard
+            </a>
+            <p style="color:#8BBDB5;font-size:0.85rem;margin-top:2rem;">Notre équipe vous contactera dans les 24h pour activer votre compte.</p>
+            <p style="color:#8BBDB5;font-size:0.85rem;">— L'équipe DentaCloud 🇩🇿</p>
+          </div>
+        `
+      })
+    });
+
+    // Email de notification pour toi
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi'
+      },
+      body: JSON.stringify({
+        from: 'DentaCloud <onboarding@resend.dev>',
+        to: ['aymenem987@gmail.com'],
+        subject: '🔔 Nouveau client DentaCloud !',
+        html: `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0D1F1C;color:#F0F9F7;padding:2rem;border-radius:12px;">
+            <h1 style="color:#C8973A;">🔔 Nouveau client inscrit !</h1>
+            <table style="width:100%;border-collapse:collapse;">
+              <tr><td style="padding:0.5rem;color:#8BBDB5;">Médecin</td><td style="padding:0.5rem;"><strong>${medecin}</strong></td></tr>
+              <tr><td style="padding:0.5rem;color:#8BBDB5;">Clinique</td><td style="padding:0.5rem;"><strong>${nom}</strong></td></tr>
+              <tr><td style="padding:0.5rem;color:#8BBDB5;">Email</td><td style="padding:0.5rem;"><strong>${email}</strong></td></tr>
+              <tr><td style="padding:0.5rem;color:#8BBDB5;">Téléphone</td><td style="padding:0.5rem;"><strong>${telephone}</strong></td></tr>
+              <tr><td style="padding:0.5rem;color:#8BBDB5;">Wilaya</td><td style="padding:0.5rem;"><strong>${wilaya}</strong></td></tr>
+              <tr><td style="padding:0.5rem;color:#8BBDB5;">Plan</td><td style="padding:0.5rem;"><strong style="color:#12A08F;">${planChoisi}</strong></td></tr>
+            </table>
+          </div>
+        `
+      })
+    });
 
     document.getElementById('modalFormScreen').style.display = 'none';
     document.getElementById('modalSuccessScreen').style.display = 'block';
@@ -1240,9 +1298,8 @@ const observer = new IntersectionObserver(entries => {
 document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
 
 // ── Tous les boutons ouvrent le modal ──
-document.querySelectorAll('.btn-nav, .btn-primary, .btn-plan').forEach(btn => {
-  btn.onclick = ouvrirModal;
-});
+document.querySelectorAll('.btn-nav, .btn-plan')
+;
 
 // CTA email button
 document.querySelector('.cta-section .btn-primary').addEventListener('click', ouvrirModal);
