@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DentaCloud — Plateforme SaaS Cliniques Dentaires Algérie</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --teal: #0A7C6E;
@@ -545,6 +546,227 @@ footer {
   padding-left:4rem; padding-right:4rem; padding-bottom:1.5rem;
 }
 
+/* ── MODAL INSCRIPTION ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.modal-container {
+  background: var(--dark-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+.modal-content {
+  padding: 2.5rem;
+}
+
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.modal-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  color: var(--text-muted);
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--teal-light);
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238BBDB5' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+
+.plan-selection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.plan-btn {
+  padding: 0.8rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.plan-btn.active {
+  border-color: var(--teal-light);
+  background: rgba(18,160,143,0.12);
+}
+
+.plan-btn-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.plan-btn-price {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+
+.btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(10,124,110,0.3);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  background: rgba(229,115,115,0.1);
+  border: 1px solid rgba(229,115,115,0.3);
+  color: #E57373;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+.success-screen {
+  display: none;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.success-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.success-text {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #25D366;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.whatsapp-btn:hover {
+  transform: translateY(-2px);
+}
+
 /* ── TRANSITIONS ── */
 .fade-section {
   opacity:0; transform:translateY(30px);
@@ -571,6 +793,8 @@ footer {
   .dashboard-preview { padding:2rem 1.5rem; }
   h1 { font-size:2.5rem; }
   .hero-stats { gap:1.5rem; }
+  .plan-selection { grid-template-columns: 1fr; }
+  .modal-content { padding: 1.5rem; }
 }
 </style>
 </head>
@@ -585,7 +809,7 @@ footer {
     <a href="#testimonials">Témoignages</a>
     <a href="#contact">Contact</a>
   </div>
-  <button class="btn-nav" onclick="window.location.href='inscription.html'">Essai Gratuit 30j →</button>
+  <button class="btn-nav" onclick="ouvrirModal()">Essai Gratuit 30j →</button>
 </nav>
 
 <!-- HERO -->
@@ -603,7 +827,7 @@ footer {
   <p class="hero-sub">Gérez vos rendez-vous, dossiers patients, facturation et stock — en arabe et en français, adapté aux PME algériennes.</p>
 
   <div class="hero-ctas">
-    <button class="btn-primary" onclick="window.location.href='inscription.html'">Démarrer gratuitement</button>
+    <button class="btn-primary" onclick="ouvrirModal()">Démarrer gratuitement</button>
     <button class="btn-secondary">▶ Voir la démo</button>
   </div>
 
@@ -855,7 +1079,7 @@ footer {
         <div class="price-feat unavail"><span class="check">—</span>Gestion multi-praticiens</div>
         <div class="price-feat unavail"><span class="check">—</span>Rapports avancés</div>
       </div>
-      <button class="btn-plan outline" onclick="window.location.href='inscription.html'">Commencer →</button>
+      <button class="btn-plan outline" onclick="ouvrirModal()">Commencer →</button>
     </div>
 
     <div class="price-card featured">
@@ -872,7 +1096,7 @@ footer {
         <div class="price-feat"><span class="check">✓</span>Rapports & analytics</div>
         <div class="price-feat"><span class="check">✓</span>Application mobile</div>
       </div>
-      <button class="btn-plan solid" onclick="window.location.href='inscription.html'">Commencer →</button>
+      <button class="btn-plan solid" onclick="ouvrirModal()">Commencer →</button>
     </div>
 
     <div class="price-card">
@@ -888,7 +1112,7 @@ footer {
         <div class="price-feat"><span class="check">✓</span>Manager de compte dédié</div>
         <div class="price-feat"><span class="check">✓</span>SLA 99.9% garanti</div>
       </div>
-      <button class="btn-plan outline" onclick="window.location.href='inscription.html'">Contacter →</button>
+      <button class="btn-plan outline" onclick="ouvrirModal()">Contacter →</button>
     </div>
   </div>
 </section>
@@ -943,8 +1167,8 @@ footer {
   <h2 class="cta-title">Prêt à digitaliser<br>votre clinique ?</h2>
   <p class="cta-sub">30 jours d'essai gratuit. Aucune carte bancaire requise. Installation en moins de 24h.</p>
   <div class="cta-input-row">
-    <input class="cta-input" type="email" placeholder="votre@email.com">
-    <button class="btn-primary">Démarrer gratuitement →</button>
+    <input class="cta-input" type="email" placeholder="votre@email.com" id="ctaEmail">
+    <button class="btn-primary" onclick="ouvrirModal()">Démarrer gratuitement →</button>
   </div>
   <p style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem">✓ Essai gratuit 30j · ✓ Sans engagement · ✓ Support inclus</p>
 </div>
@@ -982,28 +1206,90 @@ footer {
   <span>Conformité ANDPPT · Données hébergées en Algérie</span>
 </div>
 
-<script>
-// Scroll animation
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
+<!-- MODAL INSCRIPTION -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-container">
+    <button class="modal-close" onclick="fermerModal()">×</button>
+    
+    <!-- Écran Formulaire -->
+    <div class="modal-content" id="modalFormScreen">
+      <h3 class="modal-title">Démarrer votre essai gratuit</h3>
+      <p class="modal-subtitle">30 jours gratuits · Sans engagement · Support inclus</p>
+      
+      <div class="error-message" id="m_error"></div>
+      
+      <div class="plan-selection">
+        <button class="plan-btn active" onclick="selectPlan(this, 'starter')">
+          <div class="plan-btn-title">Starter</div>
+          <div class="plan-btn-price">4 900 DZD/mois</div>
+        </button>
+        <button class="plan-btn" onclick="selectPlan(this, 'pro')">
+          <div class="plan-btn-title">Pro</div>
+          <div class="plan-btn-price">9 900 DZD/mois</div>
+        </button>
+        <button class="plan-btn" onclick="selectPlan(this, 'reseau')">
+          <div class="plan-btn-title">Réseau</div>
+          <div class="plan-btn-price">24 900 DZD/mois</div>
+        </button>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Nom du médecin *</label>
+        <input type="text" class="form-input" id="m_medecin" placeholder="Dr. Amira Benali">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Nom de la clinique *</label>
+        <input type="text" class="form-input" id="m_nom" placeholder="Clinique Dentaire Sourire">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Email professionnel *</label>
+        <input type="email" class="form-input" id="m_email" placeholder="contact@clinique.dz">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Téléphone *</label>
+        <input type="tel" class="form-input" id="m_telephone" placeholder="0550 123 456">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Wilaya *</label>
+        <select class="form-select" id="m_wilaya">
+          <option value="">Sélectionnez votre wilaya</option>
+          <option value="Alger">Alger</option>
+          <option value="Oran">Oran</option>
+          <option value="Constantine">Constantine</option>
+          <option value="Annaba">Annaba</option>
+          <option value="Sétif">Sétif</option>
+          <option value="Blida">Blida</option>
+          <option value="Tlemcen">Tlemcen</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+      
+      <button class="btn-submit" id="m_btn" onclick="inscrireModal()">
+        Démarrer mon essai gratuit →
+      </button>
+    </div>
+    
+    <!-- Écran Succès -->
+    <div class="success-screen" id="modalSuccessScreen">
+      <div class="success-icon">🎉</div>
+      <h3 class="success-title">Bienvenue sur DentaCloud !</h3>
+      <p class="success-text">
+        Votre inscription a été enregistrée avec succès.<br>
+        Notre équipe vous contactera sous 24h pour finaliser l'installation.
+      </p>
+      <a href="#" class="whatsapp-btn" id="m_whatsapp" target="_blank">
+        <span>💬</span> Discuter sur WhatsApp
+      </a>
+    </div>
+  </div>
+</div>
 
-// CTA button
-document.querySelector('.cta-section .btn-primary').addEventListener('click', () => {
-  const email = document.querySelector('.cta-input').value;
-  if(email && email.includes('@')) {
-    window.location.href = 'inscription.html';
-  } else {
-    document.querySelector('.cta-input').focus();
-    document.querySelector('.cta-input').style.borderColor = '#E57373';
-    setTimeout(() => document.querySelector('.cta-input').style.borderColor = '', 2000);
-  }
-});
-</script>
-</body>
-</html<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// Supabase client
 const { createClient } = supabase;
 const sbClient = createClient(
   'https://rsefzvesepznxozgidcr.supabase.co',
@@ -1020,19 +1306,22 @@ function ouvrirModal() {
 function fermerModal() {
   document.getElementById('modalOverlay').style.display = 'none';
   document.body.style.overflow = '';
+  // Reset form
+  setTimeout(() => {
+    document.getElementById('modalFormScreen').style.display = 'block';
+    document.getElementById('modalSuccessScreen').style.display = 'none';
+    document.getElementById('m_error').style.display = 'none';
+    document.getElementById('m_btn').disabled = false;
+    document.getElementById('m_btn').innerHTML = 'Démarrer mon essai gratuit →';
+  }, 300);
 }
 
 function selectPlan(el, plan) {
   planChoisi = plan;
   document.querySelectorAll('.plan-btn').forEach(b => {
-    b.style.border = '1px solid rgba(255,255,255,0.1)';
-    b.style.background = 'transparent';
-    b.querySelectorAll('div').forEach(d => d.style.color = '#F0F9F7');
-    b.querySelectorAll('div')[1].style.color = '#8BBDB5';
+    b.classList.remove('active');
   });
-  el.style.border = '1px solid rgba(18,160,143,0.5)';
-  el.style.background = 'rgba(18,160,143,0.12)';
-  el.querySelectorAll('div').forEach(d => d.style.color = '#12A08F');
+  el.classList.add('active');
 }
 
 async function inscrireModal() {
@@ -1063,67 +1352,17 @@ async function inscrireModal() {
     if (error) {
       showModalError(error.code === '23505'
         ? '⚠️ Cet email est déjà inscrit.'
-        : '❌ Erreur : ' + error.message);
-      btn.disabled = false;
-      btn.innerHTML = 'Démarrer mon essai gratuit →';
+        : '�⚠️ Une erreur est survenue. Veuillez réessayer.');
       return;
     }
 
-    // ✅ Succès
+    // Success
     document.getElementById('modalFormScreen').style.display = 'none';
     document.getElementById('modalSuccessScreen').style.display = 'block';
-    const msg = 'Bonjour DentaCloud ! Je viens de m\'inscrire.\nNom: ' + medecin + '\nClinique: ' + nom + '\nWilaya: ' + wilaya + '\nPlan: ' + planChoisi;
-    document.getElementById('m_whatsapp').href = 'https://wa.me/213550000000?text=' + encodeURIComponent(msg);
-
-    // 📧 Emails arrière-plan
-    fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' },
-      body: JSON.stringify({
-        from: 'DentaCloud <onboarding@resend.dev>',
-        to: [email],
-        subject: '🦷 Bienvenue sur DentaCloud !',
-        html: '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7;border-radius:12px;"><h1 style="color:#12A08F;">Bienvenue ' + medecin + ' 🦷</h1><p>Votre clinique <strong>' + nom + '</strong> a été enregistrée !</p><a href="https://dentacloud.vercel.app?nouveau=1" style="display:inline-block;background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;margin-top:1rem;font-weight:600;">🚀 Accéder au Dashboard</a></div>'
-      })
-    }).catch(function() {});
-
-    fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' },
-      body: JSON.stringify({
-        from: 'DentaCloud <onboarding@resend.dev>',
-        to: ['aymenem987@gmail.com'],
-        subject: '🔔 Nouveau client : ' + medecin,
-        html: '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7;border-radius:12px;"><h1 style="color:#C8973A;">🔔 Nouveau client !</h1><p>Médecin: <strong>' + medecin + '</strong></p><p>Clinique: <strong>' + nom + '</strong></p><p>Email: <strong>' + email + '</strong></p><p>Téléphone: <strong>' + telephone + '</strong></p><p>Wilaya: <strong>' + wilaya + '</strong></p><p>Plan: <strong style="color:#12A08F;">' + planChoisi + '</strong></p></div>'
-      })
-    }).catch(function() {});
-
-  } catch(err) {
-    showModalError('❌ Erreur de connexion. Vérifiez votre internet.');
+  } catch (err) {
+    showModalError('⚠️ Une erreur est survenue. Veuillez réessayer.');
+  } finally {
     btn.disabled = false;
     btn.innerHTML = 'Démarrer mon essai gratuit →';
   }
 }
-
-function showModalError(msg) {
-  const el = document.getElementById('m_error');
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(function() { el.style.display = 'none'; }, 4000);
-}
-
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) fermerModal();
-});
-
-const observer2 = new IntersectionObserver(function(entries) {
-  entries.forEach(function(e) { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.fade-section').forEach(function(el) { observer2.observe(el); });
-
-document.querySelectorAll('.btn-nav, .btn-plan').forEach(function(btn) { btn.onclick = ouvrirModal; });
-
-document.querySelector('.cta-section .btn-primary').addEventListener('click', ouvrirModal);
-</script>
-</body>
-</html>
