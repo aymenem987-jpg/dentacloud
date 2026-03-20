@@ -585,7 +585,7 @@ footer {
     <a href="#testimonials">Témoignages</a>
     <a href="#contact">Contact</a>
   </div>
-  <button class="btn-nav" onclick="window.location.href='inscription.html'">Essai Gratuit 30j →</button>
+  <button class="btn-nav" onclick="ouvrirModal()">Essai Gratuit 30j →</button>
 </nav>
 
 <!-- HERO -->
@@ -855,7 +855,7 @@ footer {
         <div class="price-feat unavail"><span class="check">—</span>Gestion multi-praticiens</div>
         <div class="price-feat unavail"><span class="check">—</span>Rapports avancés</div>
       </div>
-      <button class="btn-plan outline" onclick="window.location.href='inscription.html'">Commencer →</button>
+      <button class="btn-plan outline" onclick="ouvrirModal()">Commencer →</button>
     </div>
 
     <div class="price-card featured">
@@ -872,7 +872,7 @@ footer {
         <div class="price-feat"><span class="check">✓</span>Rapports & analytics</div>
         <div class="price-feat"><span class="check">✓</span>Application mobile</div>
       </div>
-      <button class="btn-plan solid" onclick="window.location.href='inscription.html'">Commencer →</button>
+      <button class="btn-plan solid" onclick="ouvrirModal()">Commencer →</button>
     </div>
 
     <div class="price-card">
@@ -888,7 +888,7 @@ footer {
         <div class="price-feat"><span class="check">✓</span>Manager de compte dédié</div>
         <div class="price-feat"><span class="check">✓</span>SLA 99.9% garanti</div>
       </div>
-      <button class="btn-plan outline" onclick="window.location.href='inscription.html'">Contacter →</button>
+      <button class="btn-plan outline" onclick="ouvrirModal()">Contacter →</button>
     </div>
   </div>
 </section>
@@ -1024,15 +1024,15 @@ function fermerModal() {
 
 function selectPlan(el, plan) {
   planChoisi = plan;
-  document.querySelectorAll('.plan-btn').forEach(b => {
+  document.querySelectorAll('.plan-btn').forEach(function(b) {
     b.style.border = '1px solid rgba(255,255,255,0.1)';
     b.style.background = 'transparent';
-    b.querySelectorAll('div').forEach(d => d.style.color = '#F0F9F7');
+    b.querySelectorAll('div').forEach(function(d) { d.style.color = '#F0F9F7'; });
     b.querySelectorAll('div')[1].style.color = '#8BBDB5';
   });
   el.style.border = '1px solid rgba(18,160,143,0.5)';
   el.style.background = 'rgba(18,160,143,0.12)';
-  el.querySelectorAll('div').forEach(d => d.style.color = '#12A08F');
+  el.querySelectorAll('div').forEach(function(d) { d.style.color = '#12A08F'; });
 }
 
 async function inscrireModal() {
@@ -1043,17 +1043,17 @@ async function inscrireModal() {
   const wilaya    = document.getElementById('m_wilaya').value;
 
   if (!medecin || !nom || !email || !telephone || !wilaya) {
-    showModalError('⚠️ Veuillez remplir tous les champs obligatoires.');
+    showModalError('Veuillez remplir tous les champs obligatoires.');
     return;
   }
   if (!email.includes('@')) {
-    showModalError('⚠️ Adresse email invalide.');
+    showModalError('Adresse email invalide.');
     return;
   }
 
   const btn = document.getElementById('m_btn');
   btn.disabled = true;
-  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:0.4rem;"></span> Inscription en cours...';
+  btn.textContent = 'Inscription en cours...';
 
   try {
     const { error } = await sbClient
@@ -1061,47 +1061,36 @@ async function inscrireModal() {
       .insert([{ nom, medecin, email, telephone, wilaya, plan: planChoisi }]);
 
     if (error) {
-      showModalError(error.code === '23505'
-        ? '⚠️ Cet email est déjà inscrit.'
-        : '❌ Erreur : ' + error.message);
+      showModalError(error.code === '23505' ? 'Cet email est deja inscrit.' : 'Erreur : ' + error.message);
       btn.disabled = false;
-      btn.innerHTML = 'Démarrer mon essai gratuit →';
+      btn.textContent = 'Demarrer mon essai gratuit';
       return;
     }
 
-    // ✅ Succès
     document.getElementById('modalFormScreen').style.display = 'none';
     document.getElementById('modalSuccessScreen').style.display = 'block';
-    const msg = 'Bonjour DentaCloud ! Je viens de m\'inscrire.\nNom: ' + medecin + '\nClinique: ' + nom + '\nWilaya: ' + wilaya + '\nPlan: ' + planChoisi;
+    const msg = 'Bonjour DentaCloud ! Nom: ' + medecin + ' Clinique: ' + nom + ' Wilaya: ' + wilaya + ' Plan: ' + planChoisi;
     document.getElementById('m_whatsapp').href = 'https://wa.me/213550000000?text=' + encodeURIComponent(msg);
 
-    // 📧 Emails arrière-plan
+    const emailHtml1 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#12A08F">Bienvenue ' + medecin + '</h1><p>Clinique ' + nom + ' enregistree.</p><a href="https://dentacloud.vercel.app?nouveau=1" style="background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1rem">Acceder au Dashboard</a></div>';
+    const emailHtml2 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#C8973A">Nouveau client</h1><p>Medecin: ' + medecin + '</p><p>Email: ' + email + '</p><p>Tel: ' + telephone + '</p><p>Wilaya: ' + wilaya + '</p><p>Plan: ' + planChoisi + '</p></div>';
+
     fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' },
-      body: JSON.stringify({
-        from: 'DentaCloud <onboarding@resend.dev>',
-        to: [email],
-        subject: '🦷 Bienvenue sur DentaCloud !',
-        html: '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7;border-radius:12px;"><h1 style="color:#12A08F;">Bienvenue ' + medecin + ' 🦷</h1><p>Votre clinique <strong>' + nom + '</strong> a été enregistrée !</p><a href="https://dentacloud.vercel.app?nouveau=1" style="display:inline-block;background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;margin-top:1rem;font-weight:600;">🚀 Accéder au Dashboard</a></div>'
-      })
+      body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: [email], subject: 'Bienvenue sur DentaCloud', html: emailHtml1 })
     }).catch(function() {});
 
     fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' },
-      body: JSON.stringify({
-        from: 'DentaCloud <onboarding@resend.dev>',
-        to: ['aymenem987@gmail.com'],
-        subject: '🔔 Nouveau client : ' + medecin,
-        html: '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7;border-radius:12px;"><h1 style="color:#C8973A;">🔔 Nouveau client !</h1><p>Médecin: <strong>' + medecin + '</strong></p><p>Clinique: <strong>' + nom + '</strong></p><p>Email: <strong>' + email + '</strong></p><p>Téléphone: <strong>' + telephone + '</strong></p><p>Wilaya: <strong>' + wilaya + '</strong></p><p>Plan: <strong style="color:#12A08F;">' + planChoisi + '</strong></p></div>'
-      })
+      body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: ['aymenem987@gmail.com'], subject: 'Nouveau client : ' + medecin, html: emailHtml2 })
     }).catch(function() {});
 
   } catch(err) {
-    showModalError('❌ Erreur de connexion. Vérifiez votre internet.');
+    showModalError('Erreur de connexion. Verifiez votre internet.');
     btn.disabled = false;
-    btn.innerHTML = 'Démarrer mon essai gratuit →';
+    btn.textContent = 'Demarrer mon essai gratuit';
   }
 }
 
@@ -1116,14 +1105,10 @@ document.getElementById('modalOverlay').addEventListener('click', function(e) {
   if (e.target === this) fermerModal();
 });
 
-const observer2 = new IntersectionObserver(function(entries) {
+const obs = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
-document.querySelectorAll('.fade-section').forEach(function(el) { observer2.observe(el); });
-
-document.querySelectorAll('.btn-nav, .btn-plan').forEach(function(btn) { btn.onclick = ouvrirModal; });
-
-// boutons gérés par onclick
+document.querySelectorAll('.fade-section').forEach(function(el) { obs.observe(el); });
 </script>
 </body>
 </html>
