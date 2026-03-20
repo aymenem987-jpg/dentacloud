@@ -603,7 +603,7 @@ footer {
   <p class="hero-sub">Gérez vos rendez-vous, dossiers patients, facturation et stock — en arabe et en français, adapté aux PME algériennes.</p>
 
   <div class="hero-ctas">
-    <button class="btn-primary" onclick="window.location.href='inscription.html'">Démarrer gratuitement</button>
+    <button class="btn-primary" onclick="ouvrirModal()">Démarrer gratuitement</button>
     <button class="btn-secondary">▶ Voir la démo</button>
   </div>
 
@@ -1123,7 +1123,7 @@ document.querySelectorAll('.fade-section').forEach(function(el) { observer2.obse
 
 document.querySelectorAll('.btn-nav, .btn-plan').forEach(function(btn) { btn.onclick = ouvrirModal; });
 
-document.querySelector('.cta-section .btn-primary').addEventListener('click', ouvrirModal);
+// boutons gérés par onclick
 </script>
 </body>
 </html>
