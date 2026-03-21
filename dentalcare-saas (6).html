@@ -1004,13 +1004,12 @@ document.querySelector('.cta-section .btn-primary').addEventListener('click', ()
 </body>
 </html<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const { createClient } = supabase;
-const sbClient = createClient(
+var sbClient = supabase.createClient(
   'https://rsefzvesepznxozgidcr.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
 );
 
-let planChoisi = 'starter';
+var planChoisi = 'starter';
 
 function ouvrirModal() {
   document.getElementById('modalOverlay').style.display = 'flex';
@@ -1036,11 +1035,11 @@ function selectPlan(el, plan) {
 }
 
 async function inscrireModal() {
-  const medecin   = document.getElementById('m_medecin').value.trim();
-  const nom       = document.getElementById('m_nom').value.trim();
-  const email     = document.getElementById('m_email').value.trim();
-  const telephone = document.getElementById('m_telephone').value.trim();
-  const wilaya    = document.getElementById('m_wilaya').value;
+  var medecin   = document.getElementById('m_medecin').value.trim();
+  var nom       = document.getElementById('m_nom').value.trim();
+  var email     = document.getElementById('m_email').value.trim();
+  var telephone = document.getElementById('m_telephone').value.trim();
+  var wilaya    = document.getElementById('m_wilaya').value;
 
   if (!medecin || !nom || !email || !telephone || !wilaya) {
     showModalError('Veuillez remplir tous les champs obligatoires.');
@@ -1051,17 +1050,15 @@ async function inscrireModal() {
     return;
   }
 
-  const btn = document.getElementById('m_btn');
+  var btn = document.getElementById('m_btn');
   btn.disabled = true;
   btn.textContent = 'Inscription en cours...';
 
   try {
-    const { error } = await sbClient
-      .from('cliniques')
-      .insert([{ nom, medecin, email, telephone, wilaya, plan: planChoisi }]);
+    var result = await sbClient.from('cliniques').insert([{ nom: nom, medecin: medecin, email: email, telephone: telephone, wilaya: wilaya, plan: planChoisi }]);
 
-    if (error) {
-      showModalError(error.code === '23505' ? 'Cet email est deja inscrit.' : 'Erreur : ' + error.message);
+    if (result.error) {
+      showModalError(result.error.code === '23505' ? 'Cet email est deja inscrit.' : 'Erreur : ' + result.error.message);
       btn.disabled = false;
       btn.textContent = 'Demarrer mon essai gratuit';
       return;
@@ -1069,23 +1066,14 @@ async function inscrireModal() {
 
     document.getElementById('modalFormScreen').style.display = 'none';
     document.getElementById('modalSuccessScreen').style.display = 'block';
-    const msg = 'Bonjour DentaCloud ! Nom: ' + medecin + ' Clinique: ' + nom + ' Wilaya: ' + wilaya + ' Plan: ' + planChoisi;
+    var msg = 'Nouveau client: ' + medecin + ' - ' + nom + ' - ' + wilaya + ' - ' + planChoisi;
     document.getElementById('m_whatsapp').href = 'https://wa.me/213550000000?text=' + encodeURIComponent(msg);
 
-    const emailHtml1 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#12A08F">Bienvenue ' + medecin + '</h1><p>Clinique ' + nom + ' enregistree.</p><a href="https://dentacloud.vercel.app?nouveau=1" style="background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1rem">Acceder au Dashboard</a></div>';
-    const emailHtml2 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#C8973A">Nouveau client</h1><p>Medecin: ' + medecin + '</p><p>Email: ' + email + '</p><p>Tel: ' + telephone + '</p><p>Wilaya: ' + wilaya + '</p><p>Plan: ' + planChoisi + '</p></div>';
+    var h1 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#12A08F">Bienvenue ' + medecin + '</h1><p>Clinique: ' + nom + '</p><a href="https://dentacloud.vercel.app?nouveau=1" style="background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1rem">Acceder au Dashboard</a></div>';
+    var h2 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#C8973A">Nouveau client</h1><p>Medecin: ' + medecin + '</p><p>Email: ' + email + '</p><p>Tel: ' + telephone + '</p><p>Wilaya: ' + wilaya + '</p><p>Plan: ' + planChoisi + '</p></div>';
 
-    fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' },
-      body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: [email], subject: 'Bienvenue sur DentaCloud', html: emailHtml1 })
-    }).catch(function() {});
-
-    fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' },
-      body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: ['aymenem987@gmail.com'], subject: 'Nouveau client : ' + medecin, html: emailHtml2 })
-    }).catch(function() {});
+    fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' }, body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: [email], subject: 'Bienvenue sur DentaCloud', html: h1 }) }).catch(function() {});
+    fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' }, body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: ['aymenem987@gmail.com'], subject: 'Nouveau client: ' + medecin, html: h2 }) }).catch(function() {});
 
   } catch(err) {
     showModalError('Erreur de connexion. Verifiez votre internet.');
@@ -1095,7 +1083,7 @@ async function inscrireModal() {
 }
 
 function showModalError(msg) {
-  const el = document.getElementById('m_error');
+  var el = document.getElementById('m_error');
   el.textContent = msg;
   el.style.display = 'block';
   setTimeout(function() { el.style.display = 'none'; }, 4000);
@@ -1105,7 +1093,7 @@ document.getElementById('modalOverlay').addEventListener('click', function(e) {
   if (e.target === this) fermerModal();
 });
 
-const obs = new IntersectionObserver(function(entries) {
+var obs = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.fade-section').forEach(function(el) { obs.observe(el); });
