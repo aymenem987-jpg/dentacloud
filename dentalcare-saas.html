@@ -993,7 +993,7 @@ document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
 document.querySelector('.cta-section .btn-primary').addEventListener('click', () => {
   const email = document.querySelector('.cta-input').value;
   if(email && email.includes('@')) {
-    window.location.href = 'inscription.html';
+    ouvrirModal();
   } else {
     document.querySelector('.cta-input').focus();
     document.querySelector('.cta-input').style.borderColor = '#E57373';
@@ -1002,13 +1002,14 @@ document.querySelector('.cta-section .btn-primary').addEventListener('click', ()
 });
 </script>
 </body>
-</html<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const { createClient } = supabase;
 const sbClient = createClient(
   'https://rsefzvesepznxozgidcr.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
 );
+
 
 let planChoisi = 'starter';
 
