@@ -1013,8 +1013,11 @@ var sbClient = (window.supabase || supabase).createClient(
 var planChoisi = 'starter';
 
 function ouvrirModal() {
-  document.getElementById('modalOverlay').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  var modal = document.getElementById('modalOverlay');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
 }
 
 function fermerModal() {
