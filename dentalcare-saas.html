@@ -1094,11 +1094,11 @@ function showModalError(msg) {
 }
 
 var modalEl = document.getElementById('modalOverlay');
-if (modalEl) modalEl.addEventListener('click', function(e) {
-  if (e.target === modalEl) fermerModal();
+if (modalE1) modalE1.addEventListener('click', function(e) {
+    if (e.target == modalE1 || e.target === this) {
+        fermerModal();
+    }
 });
-  if (e.target === this) fermerModal();
-;
 
 document.addEventListener('DOMContentLoaded', function() {
   var modal = document.getElementById('modalOverlay');
