@@ -1093,9 +1093,12 @@ function showModalError(msg) {
   setTimeout(function() { el.style.display = 'none'; }, 4000);
 }
 
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) fermerModal();
+var modalEl = document.getElementById('modalOverlay');
+if (modalEl) modalEl.addEventListener('click', function(e) {
+  if (e.target === modalEl) fermerModal();
 });
+  if (e.target === this) fermerModal();
+;
 
 document.addEventListener('DOMContentLoaded', function() {
   var modal = document.getElementById('modalOverlay');
