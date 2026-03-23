@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -28,6 +28,11 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) onLogin()
+  })
+}, [])
 
   async function handleLogin(e) {
     e.preventDefault()
