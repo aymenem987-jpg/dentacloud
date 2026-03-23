@@ -1135,12 +1135,7 @@ if (modalEl) modalEl.addEventListener('click', function(e) {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-  var modal = document.getElementById('modalOverlay');
-  document.querySelectorAll('.btn-nav, .btn-primary, .btn-plan').forEach(function(btn) {
-    btn.addEventListener('click', ouvrirModal);
-  });
-});
+
 var obs = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
