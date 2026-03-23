@@ -1142,10 +1142,13 @@ document.addEventListener('DOMContentLoaded', function() {
     entries.forEach(function(e) { if(e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-section').forEach(function(el) { obs.observe(el); });
+
   var ctaBtn = document.querySelector('.cta-section .btn-primary');
   if (ctaBtn) ctaBtn.addEventListener('click', ouvrirModal);
+
   var modalEl = document.getElementById('modalOverlay');
   if (modalEl) modalEl.addEventListener('click', function(e) { if (e.target === this) fermerModal(); });
+
   var cnxEl = document.getElementById('modalConnexion');
   if (cnxEl) cnxEl.addEventListener('click', function(e) { if (e.target === this) fermerConnexion(); });
 });
