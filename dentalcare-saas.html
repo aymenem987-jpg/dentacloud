@@ -585,19 +585,21 @@ footer {
     <a href="#testimonials">Témoignages</a>
     <a href="#contact">Contact</a>
   </div>
-  <div style="display:flex; align-items:center; gap:0.5rem;">
-    <!-- Bouton pour utilisateurs non connectés -->
-    <button class="btn-login" id="btnLogin" onclick="ouvrirModalLogin()">Espace Client</button>
-    
-    <!-- Bouton Dashboard pour utilisateurs connectés -->
-    <button class="btn-dashboard" id="btnDashboard" onclick="allerAuDashboard()">Mon Dashboard →</button>
-    
-    <!-- Info utilisateur connecté -->
-    <div class="user-info" id="userInfo">
-      <div class="user-avatar" id="userAvatar">DR</div>
-      <span class="user-name" id="userName">Dr.</span>
-      <button class="logout-btn" onclick="deconnecter()">Déconnexion</button>
-    </div>
+  <a href="https://dentacloud.vercel.app" 
+   target="_blank" 
+   style="
+     color:#12A08F;
+     border:1px solid #12A08F;
+     padding:0.6rem 1.2rem;
+     border-radius:6px;
+     font-family:'DM Sans',sans-serif;
+     font-size:0.875rem;
+     font-weight:500;
+     text-decoration:none;
+     margin-right:0.8rem;
+   ">
+  Connexion →
+</a>
   <button class="btn-nav" onclick="ouvrirModal()">Essai Gratuit 30j →</button>
 </nav>
 
