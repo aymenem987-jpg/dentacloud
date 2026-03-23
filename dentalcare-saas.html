@@ -554,97 +554,32 @@ footer {
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px) {
-  nav {
-    padding:0.8rem 1rem;
-    flex-wrap:nowrap;
-    gap:0.5rem;
-  }
+  nav { padding:0.8rem 1rem; }
   .nav-links { display:none; }
   .logo { font-size:1.3rem; }
-
-  /* Nav buttons mobile */
-  nav a[onclick] {
-    padding:0.45rem 0.7rem !important;
-    font-size:0.75rem !important;
-    margin-right:0.3rem !important;
-  }
-  .btn-nav {
-    padding:0.45rem 0.8rem;
-    font-size:0.75rem;
-    white-space:nowrap;
-  }
-
-  /* Hero */
+  .btn-nav { padding:0.45rem 0.8rem; font-size:0.75rem; }
   .hero { padding:6rem 1rem 3rem; }
-  h1 { font-size:clamp(2rem, 7vw, 2.8rem); }
-  .hero-sub { font-size:0.9rem; padding:0 0.5rem; }
-  .hero-ctas {
-    flex-direction:column;
-    width:100%;
-    padding:0 1rem;
-  }
-  .btn-primary, .btn-secondary {
-    width:100%;
-    justify-content:center;
-  }
-  .hero-stats {
-    gap:1rem;
-    flex-wrap:wrap;
-    justify-content:center;
-    padding:0 1rem;
-  }
-  .hero-stats .stat { min-width:80px; }
-  .stat-num { font-size:1.8rem; }
-
-  /* Dashboard preview */
+  h1 { font-size:2.2rem; }
+  .hero-sub { font-size:0.9rem; }
+  .hero-ctas { flex-direction:column; width:100%; padding:0 1rem; }
+  .btn-primary, .btn-secondary { width:100%; justify-content:center; }
+  .hero-stats { gap:1rem; flex-wrap:wrap; justify-content:center; }
   .dashboard-preview { padding:1.5rem 0.8rem; }
   .dash-sidebar { display:none; }
   .kpi-grid { grid-template-columns:repeat(2,1fr); }
   .charts-row { grid-template-columns:1fr; }
-
-  /* Sections */
   section { padding:3rem 1rem; }
-  .section-title { font-size:1.8rem; }
   .features-grid { grid-template-columns:1fr; }
-  .pricing-grid { grid-template-columns:1fr; max-width:400px; margin:0 auto; }
+  .pricing-grid { grid-template-columns:1fr; }
   .testimonials-grid { grid-template-columns:1fr; }
-
-  /* CTA */
   .cta-section { margin:0 1rem 2rem; padding:3rem 1rem; }
-  .cta-title { font-size:1.8rem; }
-  .cta-input-row { flex-direction:column; align-items:stretch; padding:0 0.5rem; }
+  .cta-input-row { flex-direction:column; align-items:stretch; }
   .cta-input { width:100%; max-width:100%; }
-  .cta-input-row .btn-primary { width:100%; }
-
-  /* Footer */
   footer { grid-template-columns:1fr; padding:2rem 1rem; gap:1.5rem; }
-  .footer-bottom {
-    padding:1rem;
-    flex-direction:column;
-    gap:0.4rem;
-    text-align:center;
-  }
-
-  /* Modals */
-  #modalOverlay > div {
-    padding:1.5rem 1rem !important;
-    margin:0.5rem !important;
-  }
-  #modalConnexion > div {
-    padding:1.5rem 1rem !important;
-  }
-  #modalFormScreen > div[style*="grid"] {
-    grid-template-columns:1fr !important;
-  }
+  .footer-bottom { padding:1rem; flex-direction:column; gap:0.4rem; text-align:center; }
 }
-
 @media(max-width:480px) {
-  h1 { font-size:1.9rem; }
-  .hero-badge { font-size:0.65rem; }
-  .hero-stats { gap:0.8rem; }
-  .stat-num { font-size:1.5rem; }
-  .stat-label { font-size:0.65rem; }
-  nav a[onclick] { display:none !important; }
+  h1 { font-size:1.8rem; }
 }
 </style>
 </head>
@@ -659,7 +594,7 @@ footer {
     <a href="#testimonials">Témoignages</a>
     <a href="#contact">Contact</a>
   </div>
-  <button class="btn-nav" onclick="window.location.href='inscription.html'">Essai Gratuit 30j →</button>
+  <button onclick="ouvrirConnexion()" style="background:transparent;color:#12A08F;border:1px solid rgba(18,160,143,0.4);padding:0.5rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;cursor:pointer;margin-right:0.5rem;transition:all 0.2s;">Espace Client</button><button class="btn-nav" onclick="ouvrirModal()">Essai Gratuit 30j →</button>
 </nav>
 
 <!-- HERO -->
@@ -678,7 +613,7 @@ footer {
 
   <div class="hero-ctas">
     <button class="btn-primary" onclick="window.location.href='inscription.html'">Démarrer gratuitement</button>
-    <button class="btn-secondary">▶ Voir la démo</button>
+    <button class="btn-secondary" onclick="voirDemo()">▶ Voir la démo</button>
   </div>
 
   <div class="hero-stats">
@@ -1056,23 +991,163 @@ footer {
   <span>Conformité ANDPPT · Données hébergées en Algérie</span>
 </div>
 
-<script>
-// Scroll animation
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
+<!-- MODAL CONNEXION -->
+<div id="modalConnexion" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:rgba(19,36,32,0.98);border:1px solid rgba(18,160,143,0.2);border-radius:20px;padding:2.5rem;width:100%;max-width:420px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,0.5);">
+    <button onclick="fermerConnexion()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.08);border:none;color:#8BBDB5;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;">✕</button>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;text-align:center;margin-bottom:0.3rem;">Denta<span style="color:#12A08F">Cloud</span></div>
+    <p style="text-align:center;color:#8BBDB5;font-size:0.875rem;margin-bottom:2rem;">Connectez-vous à votre espace</p>
+    <div id="cnx_error" style="display:none;background:rgba(229,115,115,0.15);border:1px solid rgba(229,115,115,0.3);color:#E57373;padding:0.8rem;border-radius:8px;font-size:0.82rem;margin-bottom:1rem;"></div>
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.72rem;color:#8BBDB5;text-transform:uppercase;display:block;margin-bottom:0.4rem;">EMAIL</label>
+      <input id="cnx_email" type="email" placeholder="votre@email.com" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.8rem 1rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:1.5rem;">
+      <label style="font-size:0.72rem;color:#8BBDB5;text-transform:uppercase;display:block;margin-bottom:0.4rem;">MOT DE PASSE</label>
+      <input id="cnx_password" type="password" placeholder="••••••••" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.8rem 1rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+    </div>
+    <button id="cnx_btn" onclick="seConnecter()" style="width:100%;background:linear-gradient(135deg,#0A7C6E,#12A08F);color:#fff;border:none;border-radius:10px;padding:1rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:1rem;">Se connecter →</button>
+    <p style="text-align:center;font-size:0.82rem;color:#8BBDB5;">Pas encore de compte ? <a href="#" onclick="fermerConnexion();ouvrirModal();return false;" style="color:#12A08F;text-decoration:none;font-weight:600;">Créer un compte</a></p>
+  </div>
+</div>
 
-// CTA button
-document.querySelector('.cta-section .btn-primary').addEventListener('click', () => {
-  const email = document.querySelector('.cta-input').value;
-  if(email && email.includes('@')) {
-    ouvrirModal();
-  } else {
-    document.querySelector('.cta-input').focus();
-    document.querySelector('.cta-input').style.borderColor = '#E57373';
-    setTimeout(() => document.querySelector('.cta-input').style.borderColor = '', 2000);
+<!-- MODAL INSCRIPTION -->
+<div id="modalOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:rgba(19,36,32,0.98);border:1px solid rgba(18,160,143,0.3);border-radius:20px;padding:2.5rem;width:100%;max-width:520px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,0.5);max-height:90vh;overflow-y:auto;">
+    <button onclick="fermerModal()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.08);border:none;color:#8BBDB5;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;">✕</button>
+    <div id="modalFormScreen">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;text-align:center;margin-bottom:1rem;">Denta<span style="color:#12A08F">Cloud</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;">
+        <div><label style="font-size:0.72rem;color:#8BBDB5;display:block;margin-bottom:0.35rem;">NOM MÉDECIN *</label><input id="m_medecin" type="text" placeholder="Dr. Ahmed Benali" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;box-sizing:border-box;"></div>
+        <div><label style="font-size:0.72rem;color:#8BBDB5;display:block;margin-bottom:0.35rem;">NOM CLINIQUE *</label><input id="m_nom" type="text" placeholder="Clinique Dentaire Oran" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;box-sizing:border-box;"></div>
+        <div><label style="font-size:0.72rem;color:#8BBDB5;display:block;margin-bottom:0.35rem;">EMAIL *</label><input id="m_email" type="email" placeholder="contact@clinique.dz" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;box-sizing:border-box;"></div>
+        <div><label style="font-size:0.72rem;color:#8BBDB5;display:block;margin-bottom:0.35rem;">TÉLÉPHONE *</label><input id="m_telephone" type="tel" placeholder="0550 000 000" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;box-sizing:border-box;"></div>
+        <div><label style="font-size:0.72rem;color:#8BBDB5;display:block;margin-bottom:0.35rem;">WILAYA *</label><select id="m_wilaya" style="background:#132420;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;"><option value="">Choisir...</option><option>Alger</option><option>Oran</option><option>Constantine</option><option>Annaba</option><option>Blida</option><option>Batna</option><option>Sétif</option><option>Tizi Ouzou</option><option>Béjaïa</option><option>Tlemcen</option><option>Adrar</option><option>Chlef</option><option>Laghouat</option><option>Oum El Bouaghi</option><option>Biskra</option><option>Béchar</option><option>Bouira</option><option>Tamanrasset</option><option>Tébessa</option><option>Tiaret</option><option>Djelfa</option><option>Jijel</option><option>Saïda</option><option>Skikda</option><option>Sidi Bel Abbès</option><option>Guelma</option><option>Médéa</option><option>Mostaganem</option><option>M'Sila</option><option>Mascara</option><option>Ouargla</option><option>El Bayadh</option><option>Illizi</option><option>Bordj Bou Arréridj</option><option>Boumerdès</option><option>El Tarf</option><option>Tindouf</option><option>Tissemsilt</option><option>El Oued</option><option>Khenchela</option><option>Souk Ahras</option><option>Tipaza</option><option>Mila</option><option>Aïn Defla</option><option>Naâma</option><option>Aïn Témouchent</option><option>Ghardaïa</option><option>Relizane</option></select></div>
+        <div><label style="font-size:0.72rem;color:#8BBDB5;display:block;margin-bottom:0.35rem;">NB. DENTISTES</label><select id="m_nb" style="background:#132420;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.7rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.875rem;outline:none;width:100%;"><option value="1">1 dentiste</option><option value="2-5">2 à 5</option><option value="+5">Plus de 5</option></select></div>
+        <div style="grid-column:1/-1;"><label style="font-size:0.72rem;color:#8BBDB5;display:block;margin-bottom:0.35rem;">PLAN</label><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;"><div onclick="selectPlan(this,'starter')" class="plan-btn" style="border:1px solid rgba(18,160,143,0.4);background:rgba(18,160,143,0.1);border-radius:8px;padding:0.6rem;text-align:center;cursor:pointer;"><div style="font-size:0.78rem;font-weight:600;color:#12A08F;">Starter</div><div style="font-size:0.62rem;color:#12A08F;">4 900 DZD/mois</div></div><div onclick="selectPlan(this,'pro')" class="plan-btn" style="border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.6rem;text-align:center;cursor:pointer;"><div style="font-size:0.78rem;font-weight:600;color:#F0F9F7;">Pro</div><div style="font-size:0.62rem;color:#8BBDB5;">9 900 DZD/mois</div></div><div onclick="selectPlan(this,'reseau')" class="plan-btn" style="border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.6rem;text-align:center;cursor:pointer;"><div style="font-size:0.78rem;font-weight:600;color:#F0F9F7;">Réseau</div><div style="font-size:0.62rem;color:#8BBDB5;">24 900 DZD/mois</div></div></div></div>
+        <div id="m_error" style="grid-column:1/-1;display:none;background:rgba(229,115,115,0.15);border:1px solid rgba(229,115,115,0.3);color:#E57373;padding:0.8rem;border-radius:8px;font-size:0.82rem;"></div>
+        <button id="m_btn" onclick="inscrireModal()" style="grid-column:1/-1;background:linear-gradient(135deg,#0A7C6E,#12A08F);color:#fff;border:none;border-radius:10px;padding:1rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">Démarrer mon essai gratuit →</button>
+      </div>
+    </div>
+    <div id="modalSuccessScreen" style="display:none;text-align:center;padding:2rem 0;">
+      <div style="font-size:4rem;margin-bottom:1rem;">🦷</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;margin-bottom:0.5rem;">Mbrouk ! 🎉</div>
+      <p style="color:#8BBDB5;margin-bottom:1.5rem;">Votre clinique a été enregistrée avec succès !</p>
+      <a href="https://dentacloud.vercel.app?nouveau=1" target="_blank" style="display:block;width:fit-content;margin:0 auto 0.8rem;background:linear-gradient(135deg,#0A7C6E,#12A08F);color:#fff;border-radius:10px;padding:0.9rem 2rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;text-decoration:none;">Accéder à mon Dashboard →</a>
+      <a id="m_whatsapp" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:0.5rem;background:#25D366;color:#fff;border-radius:10px;padding:0.8rem 1.5rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;text-decoration:none;">WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var sbClient = supabase.createClient(
+  'https://rsefzvesepznxozgidcr.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+);
+var planChoisi = 'starter';
+
+function ouvrirModal() {
+  var m = document.getElementById('modalOverlay');
+  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function fermerModal() {
+  document.getElementById('modalOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function ouvrirConnexion() {
+  var m = document.getElementById('modalConnexion');
+  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function fermerConnexion() {
+  document.getElementById('modalConnexion').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function voirDemo() {
+  document.querySelector('.dashboard-preview').scrollIntoView({ behavior: 'smooth' });
+}
+function selectPlan(el, plan) {
+  planChoisi = plan;
+  document.querySelectorAll('.plan-btn').forEach(function(b) {
+    b.style.border = '1px solid rgba(255,255,255,0.1)';
+    b.style.background = 'transparent';
+    b.querySelectorAll('div').forEach(function(d) { d.style.color = '#F0F9F7'; });
+    b.querySelectorAll('div')[1].style.color = '#8BBDB5';
+  });
+  el.style.border = '1px solid rgba(18,160,143,0.5)';
+  el.style.background = 'rgba(18,160,143,0.12)';
+  el.querySelectorAll('div').forEach(function(d) { d.style.color = '#12A08F'; });
+}
+async function inscrireModal() {
+  var medecin = document.getElementById('m_medecin').value.trim();
+  var nom = document.getElementById('m_nom').value.trim();
+  var email = document.getElementById('m_email').value.trim();
+  var telephone = document.getElementById('m_telephone').value.trim();
+  var wilaya = document.getElementById('m_wilaya').value;
+  if (!medecin || !nom || !email || !telephone || !wilaya) {
+    showModalError('Veuillez remplir tous les champs obligatoires.'); return;
   }
+  if (!email.includes('@')) { showModalError('Adresse email invalide.'); return; }
+  var btn = document.getElementById('m_btn');
+  btn.disabled = true; btn.textContent = 'Inscription en cours...';
+  try {
+    var result = await sbClient.from('cliniques').insert([{ nom: nom, medecin: medecin, email: email, telephone: telephone, wilaya: wilaya, plan: planChoisi }]);
+    if (result.error) {
+      showModalError(result.error.code === '23505' ? 'Cet email est deja inscrit.' : 'Erreur : ' + result.error.message);
+      btn.disabled = false; btn.textContent = 'Demarrer mon essai gratuit'; return;
+    }
+    document.getElementById('modalFormScreen').style.display = 'none';
+    document.getElementById('modalSuccessScreen').style.display = 'block';
+    var msg = 'Nouveau client: ' + medecin + ' - ' + nom + ' - ' + wilaya + ' - ' + planChoisi;
+    document.getElementById('m_whatsapp').href = 'https://wa.me/213550000000?text=' + encodeURIComponent(msg);
+    var h1 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#12A08F">Bienvenue ' + medecin + '</h1><p>Clinique: ' + nom + '</p><a href="https://dentacloud.vercel.app?nouveau=1" style="background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1rem">Acceder au Dashboard</a></div>';
+    var h2 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#C8973A">Nouveau client</h1><p>' + medecin + '</p><p>' + email + '</p><p>' + wilaya + '</p><p>' + planChoisi + '</p></div>';
+    fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' }, body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: [email], subject: 'Bienvenue sur DentaCloud', html: h1 }) }).catch(function() {});
+    fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' }, body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: ['aymenem987@gmail.com'], subject: 'Nouveau client: ' + medecin, html: h2 }) }).catch(function() {});
+  } catch(err) {
+    showModalError('Erreur de connexion.'); btn.disabled = false; btn.textContent = 'Demarrer mon essai gratuit';
+  }
+}
+function showModalError(msg) {
+  var el = document.getElementById('m_error');
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(function() { el.style.display = 'none'; }, 4000);
+}
+async function seConnecter() {
+  var email = document.getElementById('cnx_email').value.trim();
+  var password = document.getElementById('cnx_password').value.trim();
+  if (!email || !password) {
+    document.getElementById('cnx_error').textContent = 'Veuillez remplir tous les champs.';
+    document.getElementById('cnx_error').style.display = 'block'; return;
+  }
+  var btn = document.getElementById('cnx_btn');
+  btn.textContent = 'Connexion...'; btn.disabled = true;
+  try {
+    var result = await sbClient.auth.signInWithPassword({ email: email, password: password });
+    if (result.error) {
+      document.getElementById('cnx_error').textContent = 'Email ou mot de passe incorrect.';
+      document.getElementById('cnx_error').style.display = 'block';
+      btn.textContent = 'Se connecter →'; btn.disabled = false; return;
+    }
+    var session = result.data.session;
+    window.location.href = 'https://dentacloud.vercel.app?access_token=' + session.access_token + '&refresh_token=' + session.refresh_token;
+  } catch(err) {
+    document.getElementById('cnx_error').textContent = 'Erreur de connexion.';
+    document.getElementById('cnx_error').style.display = 'block';
+    btn.textContent = 'Se connecter →'; btn.disabled = false;
+  }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-section').forEach(function(el) { obs.observe(el); });
+  var ctaBtn = document.querySelector('.cta-section .btn-primary');
+  if (ctaBtn) ctaBtn.addEventListener('click', ouvrirModal);
+  var modalEl = document.getElementById('modalOverlay');
+  if (modalEl) modalEl.addEventListener('click', function(e) { if (e.target === this) fermerModal(); });
+  var cnxEl = document.getElementById('modalConnexion');
+  if (cnxEl) cnxEl.addEventListener('click', function(e) { if (e.target === this) fermerConnexion(); });
 });
 </script>
 </body>
