@@ -618,7 +618,7 @@ footer {
 
   <div class="hero-ctas">
     <button class="btn-primary" onclick="ouvrirModal()">Démarrer gratuitement</button>
-    <button class="btn-secondary">▶ Voir la démo</button>
+    <button class="btn-secondary" onclick="voirDemo()">▶ Voir la démo</button>
   </div>
 
   <div class="hero-stats">
@@ -1181,6 +1181,10 @@ window.location.href = 'https://dentacloud.vercel.app?access_token=' + session.a
     btn.textContent = 'Se connecter →';
     btn.disabled = false;
   }
+}
+function voirDemo() {
+  document.querySelector('.dashboard-preview')
+    .scrollIntoView({ behavior: 'smooth' });
 }
 </script>
 <div id="modalOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
