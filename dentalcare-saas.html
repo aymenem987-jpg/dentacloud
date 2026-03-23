@@ -1087,6 +1087,27 @@ async function inscrireModal() {
     var msg = 'Nouveau client: ' + medecin + ' - ' + nom + ' - ' + wilaya + ' - ' + planChoisi;
     document.getElementById('m_whatsapp').href = 'https://wa.me/213550000000?text=' + encodeURIComponent(msg);
 
+    // TODO: SECURITY - Move email sending to backend API to protect API key
+    // The Resend API key should never be exposed in client-side code
+    // Create a backend endpoint (e.g., /api/send-welcome-email) to handle this securely
+    
+    var emailData = {
+      medecin: medecin,
+      nom: nom,
+      email: email,
+      telephone: telephone,
+      wilaya: wilaya,
+      plan: planChoisi
+    };
+    
+    // Example of secure implementation:
+    // fetch('/api/send-welcome-email', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(emailData)
+    // }).catch(function() {});
+    
+    // TEMPORARY: Direct API calls (INSECURE - API key exposed)
     var h1 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#12A08F">Bienvenue ' + medecin + '</h1><p>Clinique: ' + nom + '</p><a href="https://dentacloud.vercel.app?nouveau=1" style="background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1rem">Acceder au Dashboard</a></div>';
     var h2 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#C8973A">Nouveau client</h1><p>Medecin: ' + medecin + '</p><p>Email: ' + email + '</p><p>Tel: ' + telephone + '</p><p>Wilaya: ' + wilaya + '</p><p>Plan: ' + planChoisi + '</p></div>';
 
@@ -1109,7 +1130,7 @@ function showModalError(msg) {
 
 var modalEl = document.getElementById('modalOverlay');
 if (modalEl) modalEl.addEventListener('click', function(e) {
-    if (e.target == modalE1 || e.target === this) {
+    if (e.target == modalEl || e.target === this) {
         fermerModal();
     }
 });
@@ -1153,7 +1174,7 @@ async function seConnecter() {
       return;
     }
     var session = result.data.session;
-window.location.href = 'https://dentacloud.vercel.app?access_token=' + session.access_token + '&refresh_token=' + session.refresh_token;;
+window.location.href = 'https://dentacloud.vercel.app?access_token=' + session.access_token + '&refresh_token=' + session.refresh_token;
   } catch(err) {
     document.getElementById('cnx_error').textContent = 'Erreur de connexion.';
     document.getElementById('cnx_error').style.display = 'block';
