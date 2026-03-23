@@ -1152,7 +1152,8 @@ async function seConnecter() {
       btn.disabled = false;
       return;
     }
-    window.location.href = 'https://dentacloud.vercel.app';
+    var session = result.data.session;
+window.location.href = 'https://dentacloud.vercel.app?access_token=' + session.access_token + '&refresh_token=' + session.refresh_token;;
   } catch(err) {
     document.getElementById('cnx_error').textContent = 'Erreur de connexion.';
     document.getElementById('cnx_error').style.display = 'block';

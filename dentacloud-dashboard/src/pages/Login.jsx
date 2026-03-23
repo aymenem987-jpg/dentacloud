@@ -28,10 +28,21 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
   useEffect(() => {
-  supabase.auth.getSession().then(({ data }) => {
-    if (data.session) onLogin()
-  })
+  const params = new URLSearchParams(window.location.search)
+  const access_token = params.get('access_token')
+  const refresh_token = params.get('refresh_token')
+  
+  if (access_token && refresh_token) {
+    supabase.auth.setSession({ access_token, refresh_token }).then(({ data }) => {
+      if (data.session) onLogin()
+    })
+  } else {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) onLogin()
+    })
+  }
 }, [])
 
   async function handleLogin(e) {
