@@ -71,13 +71,36 @@ export default function Dashboard() {
   }, [])
 
   async function fetchAbonnement(email) {
-    const { data } = await supabase.from('cliniques').select('date_expiration, plan_actif, abonnement_statut').eq('email', email).single()
-    if (data) {
-      setAbonnementStatut(data.abonnement_statut || 'essai')
-      if (data.date_expiration) {
-        const diff = new Date(data.date_expiration) - new Date()
-        setJoursRestants(Math.ceil(diff / (1000 * 60 * 60 * 24)))
+    try {
+      const { data, error } = await supabase
+        .from('cliniques')
+        .select('date_expiration, plan_actif, abonnement_statut')
+        .ilike('email', email)
+        .maybeSingle()
+
+      if (error) {
+        console.error('Erreur lors de la récupération de l\'abonnement:', error)
+        setAbonnementStatut('essai')
+        setJoursRestants(30)
+        return
       }
+
+      if (data) {
+        setAbonnementStatut(data.abonnement_statut || 'essai')
+        if (data.date_expiration) {
+          const diff = new Date(data.date_expiration) - new Date()
+          setJoursRestants(Math.ceil(diff / (1000 * 60 * 60 * 24)))
+        } else {
+          setJoursRestants(30)
+        }
+      } else {
+        setAbonnementStatut('essai')
+        setJoursRestants(30)
+      }
+    } catch (err) {
+      console.error('Erreur inattendue:', err)
+      setAbonnementStatut('essai')
+      setJoursRestants(30)
     }
   }
 
