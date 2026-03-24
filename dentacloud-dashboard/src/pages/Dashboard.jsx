@@ -6,22 +6,47 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
 )
 
-const card = { background: 'rgba(19,36,32,0.8)', border: '1px solid rgba(18,160,143,0.15)', borderRadius: '12px', padding: '1.2rem' }
+const card = {
+  background: 'rgba(19,36,32,0.8)',
+  border: '1px solid rgba(18,160,143,0.15)',
+  borderRadius: '12px',
+  padding: '1.2rem'
+}
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ patients: 0, rdv: 0 })
   const [rdvList, setRdvList] = useState([])
   const [loading, setLoading] = useState(true)
   const [userName, setUserName] = useState('')
+  const [joursRestants, setJoursRestants] = useState(null)
+  const [abonnementStatut, setAbonnementStatut] = useState('essai')
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         setUserName(user.email.split('@')[0])
         fetchData(user.id)
+        fetchAbonnement(user.email)
       }
     })
   }, [])
+
+  async function fetchAbonnement(email) {
+    const { data } = await supabase
+      .from('cliniques')
+      .select('date_expiration, plan_actif, abonnement_statut')
+      .eq('email', email)
+      .single()
+
+    if (data) {
+      setAbonnementStatut(data.abonnement_statut || 'essai')
+      if (data.date_expiration) {
+        const diff = new Date(data.date_expiration) - new Date()
+        const jours = Math.ceil(diff / (1000 * 60 * 60 * 24))
+        setJoursRestants(jours)
+      }
+    }
+  }
 
   async function fetchData(uid) {
     const [{ count: nbPatients }, { count: nbRdv }, { data: rdvData }] = await Promise.all([
@@ -44,14 +69,111 @@ export default function Dashboard() {
     { label: 'Satisfaction', value: '98%', icon: '⭐', color: '#12A08F', delta: 'Excellent' },
   ]
 
+  // Bannière d'essai
+  const renderBanniere = () => {
+    if (abonnementStatut === 'actif') return null
+
+    if (joursRestants === null) return null
+
+    if (joursRestants <= 0) {
+      return (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(229,115,115,0.15), rgba(229,115,115,0.05))',
+          border: '1px solid rgba(229,115,115,0.3)',
+          borderRadius: '12px', padding: '1rem 1.5rem',
+          marginBottom: '1.5rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '1rem',
+        }}>
+          <div>
+            <div style={{ fontWeight: 600, color: '#E57373', marginBottom: '0.2rem' }}>
+              ⚠️ Votre essai gratuit est expiré
+            </div>
+            <div style={{ fontSize: '0.82rem', color: '#8BBDB5' }}>
+              Souscrivez maintenant pour continuer à utiliser DentaCloud
+            </div>
+          </div>
+          <button style={{
+            background: 'linear-gradient(135deg, #0A7C6E, #12A08F)',
+            color: '#fff', border: 'none', borderRadius: '8px',
+            padding: '0.7rem 1.5rem', cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: '0.875rem',
+            whiteSpace: 'nowrap',
+          }}>
+            🚀 Souscrire maintenant
+          </button>
+        </div>
+      )
+    }
+
+    if (joursRestants <= 7) {
+      return (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(200,151,58,0.15), rgba(200,151,58,0.05))',
+          border: '1px solid rgba(200,151,58,0.3)',
+          borderRadius: '12px', padding: '1rem 1.5rem',
+          marginBottom: '1.5rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '1rem',
+        }}>
+          <div>
+            <div style={{ fontWeight: 600, color: '#E8B55A', marginBottom: '0.2rem' }}>
+              ⏳ Plus que {joursRestants} jour{joursRestants > 1 ? 's' : ''} d'essai gratuit
+            </div>
+            <div style={{ fontSize: '0.82rem', color: '#8BBDB5' }}>
+              Souscrivez avant expiration pour ne pas perdre vos données
+            </div>
+          </div>
+          <button style={{
+            background: 'linear-gradient(135deg, #C8973A, #E8B55A)',
+            color: '#fff', border: 'none', borderRadius: '8px',
+            padding: '0.7rem 1.5rem', cursor: 'pointer',
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: '0.875rem',
+            whiteSpace: 'nowrap',
+          }}>
+            Souscrire →
+          </button>
+        </div>
+      )
+    }
+
+    return (
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(18,160,143,0.1), rgba(18,160,143,0.05))',
+        border: '1px solid rgba(18,160,143,0.2)',
+        borderRadius: '12px', padding: '0.8rem 1.5rem',
+        marginBottom: '1.5rem',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: '0.5rem',
+      }}>
+        <div style={{ fontSize: '0.82rem', color: '#8BBDB5' }}>
+          🎉 Essai gratuit — <strong style={{ color: '#12A08F' }}>{joursRestants} jours restants</strong>
+        </div>
+        <button style={{
+          background: 'transparent', color: '#12A08F',
+          border: '1px solid rgba(18,160,143,0.3)',
+          borderRadius: '6px', padding: '0.3rem 0.8rem',
+          cursor: 'pointer', fontSize: '0.75rem',
+          fontFamily: "'DM Sans', sans-serif",
+        }}>
+          Voir les plans →
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div>
-      <div style={{ marginBottom: '2rem' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '1.5rem' }}>
         <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '2rem', fontWeight: 700, marginBottom: '0.3rem' }}>
           Bonjour, {userName} 👋
         </h1>
         <p style={{ color: '#8BBDB5', fontSize: '0.875rem' }}>Voici un aperçu de votre activité</p>
       </div>
+
+      {/* Bannière essai */}
+      {renderBanniere()}
 
       {/* KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -74,7 +196,9 @@ export default function Dashboard() {
       {/* Charts */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         <div style={card}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>Activité — 7 derniers jours</div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>
+            Activité — 7 derniers jours
+          </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '80px' }}>
             {bars.map((h, i) => (
               <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
@@ -90,7 +214,9 @@ export default function Dashboard() {
         </div>
 
         <div style={card}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>Types de soins</div>
+          <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>
+            Types de soins
+          </div>
           {[
             { label: 'Détartrage', pct: 40, color: '#12A08F' },
             { label: 'Carie / Obturations', pct: 30, color: '#C8973A' },
@@ -124,7 +250,9 @@ export default function Dashboard() {
             {loading ? (
               <div style={{ textAlign: 'center', padding: '2rem', color: '#8BBDB5' }}>Chargement...</div>
             ) : rdvList.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#8BBDB5' }}>💡 Ajoutez des rendez-vous dans la section Agenda</div>
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#8BBDB5' }}>
+                💡 Ajoutez des rendez-vous dans la section Agenda
+              </div>
             ) : rdvList.map((rdv, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '0.5rem', padding: '0.6rem 1rem', borderTop: '1px solid rgba(18,160,143,0.05)', fontSize: '0.78rem', transition: 'background 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(18,160,143,0.04)'}
