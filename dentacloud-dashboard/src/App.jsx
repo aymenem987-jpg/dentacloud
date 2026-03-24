@@ -7,6 +7,7 @@ import Agenda from './pages/Agenda'
 import Facturation from './pages/Facturation'
 import Login from './pages/Login'
 import Parametres from './pages/Parametres'
+import Stock from './pages/Stock'
 
 const supabase = createClient(
   'https://rsefzvesepznxozgidcr.supabase.co',
@@ -19,6 +20,7 @@ const menuItems = [
   { path: '/patients', icon: '👥', label: 'Patients' },
   { path: '/facturation', icon: '💰', label: 'Facturation' },
   { path: '/parametres', icon: '⚙️', label: 'Paramètres' },
+  { path: '/stock', icon: '💊', label: 'Stock' },
 ]
 
 function BottomNav() {
@@ -306,6 +308,7 @@ export default function App() {
               <Route path="/facturation" element={<Facturation />} />
               <Route path="*" element={<Navigate to="/" />} />
               <Route path="/parametres" element={<Parametres />} />
+              <Route path="/stock" element={<Stock />} />
             </Routes>
           </div>
         </div>
