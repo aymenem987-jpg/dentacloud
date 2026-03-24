@@ -6,6 +6,7 @@ import Patients from './pages/Patients'
 import Agenda from './pages/Agenda'
 import Facturation from './pages/Facturation'
 import Login from './pages/Login'
+import Parametres from './pages/Parametres'
 
 const supabase = createClient(
   'https://rsefzvesepznxozgidcr.supabase.co',
@@ -17,6 +18,7 @@ const menuItems = [
   { path: '/agenda', icon: '📅', label: 'Agenda' },
   { path: '/patients', icon: '👥', label: 'Patients' },
   { path: '/facturation', icon: '💰', label: 'Facturation' },
+  { path: '/parametres', icon: '⚙️', label: 'Paramètres' },
 ]
 
 function BottomNav() {
@@ -303,6 +305,7 @@ export default function App() {
               <Route path="/patients" element={<Patients />} />
               <Route path="/facturation" element={<Facturation />} />
               <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/parametres" element={<Parametres />} />
             </Routes>
           </div>
         </div>
