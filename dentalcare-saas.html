@@ -1099,7 +1099,7 @@ async function inscrireModal() {
     document.getElementById('modalFormScreen').style.display = 'none';
     document.getElementById('modalSuccessScreen').style.display = 'block';
     var msg = 'Nouveau client: ' + medecin + ' - ' + nom + ' - ' + wilaya + ' - ' + planChoisi;
-    document.getElementById('m_whatsapp').href = 'https://wa.me/213550000000?text=' + encodeURIComponent(msg);
+    document.getElementById('m_whatsapp').href = 'https://wa.me/213775538234?text=' + encodeURIComponent(msg);
     var h1 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#12A08F">Bienvenue ' + medecin + '</h1><p>Clinique: ' + nom + '</p><a href="https://dentacloud.vercel.app?nouveau=1" style="background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1rem">Acceder au Dashboard</a></div>';
     var h2 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#C8973A">Nouveau client</h1><p>' + medecin + '</p><p>' + email + '</p><p>' + wilaya + '</p><p>' + planChoisi + '</p></div>';
     fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' }, body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: [email], subject: 'Bienvenue sur DentaCloud', html: h1 }) }).catch(function() {});

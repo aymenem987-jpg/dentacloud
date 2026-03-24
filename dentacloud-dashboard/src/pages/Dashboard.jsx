@@ -39,7 +39,7 @@ function PopupPlans({ onClose }) {
                   </div>
                 ))}
               </div>
-              <button onClick={() => { const msg = `Bonjour DentaCloud ! Je voudrais souscrire au plan ${plan.nom} à ${plan.prix} DZD/mois.`; window.open(`https://wa.me/213550000000?text=${encodeURIComponent(msg)}`, '_blank') }} style={{ width: '100%', padding: '0.85rem', background: plan.populaire ? 'linear-gradient(135deg, #C8973A, #E8B55A)' : 'linear-gradient(135deg, #0A7C6E, #12A08F)', color: '#fff', border: 'none', borderRadius: '8px', fontFamily: "'DM Sans', sans-serif", fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>
+              <button onClick={() => { const msg = `Bonjour DentaCloud ! Je voudrais souscrire au plan ${plan.nom} à ${plan.prix} DZD/mois.`; window.open(`https://wa.me/213775538234?text=${encodeURIComponent(msg)}`, '_blank') }} style={{ width: '100%', padding: '0.85rem', background: plan.populaire ? 'linear-gradient(135deg, #C8973A, #E8B55A)' : 'linear-gradient(135deg, #0A7C6E, #12A08F)', color: '#fff', border: 'none', borderRadius: '8px', fontFamily: "'DM Sans', sans-serif", fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>
                 Souscrire via WhatsApp →
               </button>
             </div>
@@ -102,7 +102,7 @@ export default function Dashboard() {
     { label: 'Satisfaction', value: '98%', icon: '⭐', color: '#12A08F', delta: 'Excellent' },
   ]
 
-  
+
   const renderBanniere = () => {
     if (abonnementStatut === 'actif' || joursRestants === null) return null
     if (joursRestants <= 0) return (
