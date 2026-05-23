@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  'https://rsefzvesepznxozgidcr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 )
 
 const card = { background: 'rgba(19,36,32,0.8)', border: '1px solid rgba(18,160,143,0.15)', borderRadius: '12px', padding: '1.2rem' }
@@ -78,12 +78,7 @@ export default function Dashboard() {
         .ilike('email', email)
         .maybeSingle()
 
-      if (error) {
-        console.error('Erreur lors de la récupération de l\'abonnement:', error)
-        setAbonnementStatut('essai')
-        setJoursRestants(30)
-        return
-      }
+      if (error) console.error('Error fetching subscription:', error)
 
       if (data) {
         setAbonnementStatut(data.abonnement_statut || 'essai')
@@ -98,21 +93,32 @@ export default function Dashboard() {
         setJoursRestants(30)
       }
     } catch (err) {
-      console.error('Erreur inattendue:', err)
+      console.error('Unexpected error fetching subscription:', err)
       setAbonnementStatut('essai')
       setJoursRestants(30)
     }
   }
 
   async function fetchData(uid) {
-    const [{ count: nbPatients }, { count: nbRdv }, { data: rdvData }] = await Promise.all([
-      supabase.from('patients').select('*', { count: 'exact', head: true }).eq('user_id', uid),
-      supabase.from('rendez_vous').select('*', { count: 'exact', head: true }).eq('user_id', uid),
-      supabase.from('rendez_vous').select('*, patients(nom, prenom)').eq('user_id', uid).limit(5).order('date_heure', { ascending: true })
-    ])
-    setStats({ patients: nbPatients || 0, rdv: nbRdv || 0 })
-    setRdvList(rdvData || [])
-    setLoading(false)
+    try {
+      const responses = await Promise.all([
+        supabase.from('patients').select('*', { count: 'exact', head: true }).eq('user_id', uid),
+        supabase.from('rendez_vous').select('*', { count: 'exact', head: true }).eq('user_id', uid),
+        supabase.from('rendez_vous').select('*, patients(nom, prenom)').eq('user_id', uid).limit(5).order('date_heure', { ascending: true }),
+      ])
+      const [{ count: nbPatients, error: errPatients }, { count: nbRdv, error: errRdv }, { data: rdvData, error: errRdvData }] = responses
+      if (errPatients) console.error('Error fetching patients count:', errPatients)
+      if (errRdv) console.error('Error fetching rendez-vous count:', errRdv)
+      if (errRdvData) console.error('Error fetching rendez-vous list:', errRdvData)
+      setStats({ patients: nbPatients || 0, rdv: nbRdv || 0 })
+      setRdvList(rdvData || [])
+    } catch (err) {
+      console.error('Unexpected error in fetchData:', err)
+      setStats({ patients: 0, rdv: 0 })
+      setRdvList([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   const bars = [35, 55, 40, 75, 60, 90, 70]

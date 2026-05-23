@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  'https://rsefzvesepznxozgidcr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 )
 
 const card = {
@@ -52,6 +52,34 @@ export default function Parametres() {
     email_contact: '',
   })
 
+  async function fetchParams(uid) {
+    try {
+      const { data, error } = await supabase
+        .from('parametres_clinique')
+        .select('*')
+        .eq('user_id', uid)
+        .single()
+
+      if (error && error.code !== 'PGRST116') console.error('Error fetching settings:', error)
+
+      if (data) {
+        setForm({
+          nom_clinique: data.nom_clinique || '',
+          medecin: data.medecin || '',
+          telephone: data.telephone || '',
+          whatsapp: data.whatsapp || '',
+          adresse: data.adresse || '',
+          wilaya: data.wilaya || '',
+          email_contact: data.email_contact || '',
+        })
+      }
+    } catch (err) {
+      console.error('Unexpected error fetching settings:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -62,51 +90,35 @@ export default function Parametres() {
     })
   }, [])
 
-  async function fetchParams(uid) {
-    const { data } = await supabase
-      .from('parametres_clinique')
-      .select('*')
-      .eq('user_id', uid)
-      .single()
-
-    if (data) {
-      setForm({
-        nom_clinique: data.nom_clinique || '',
-        medecin: data.medecin || '',
-        telephone: data.telephone || '',
-        whatsapp: data.whatsapp || '',
-        adresse: data.adresse || '',
-        wilaya: data.wilaya || '',
-        email_contact: data.email_contact || '',
-      })
-    }
-    setLoading(false)
-  }
-
   async function handleSave() {
     setSaving(true)
     setSaved(false)
-
-    const { data: existing } = await supabase
-      .from('parametres_clinique')
-      .select('id')
-      .eq('user_id', userId)
-      .single()
-
-    if (existing) {
-      await supabase
+    try {
+      const { data: existing } = await supabase
         .from('parametres_clinique')
-        .update({ ...form, updated_at: new Date().toISOString() })
+        .select('id')
         .eq('user_id', userId)
-    } else {
-      await supabase
-        .from('parametres_clinique')
-        .insert([{ ...form, user_id: userId }])
-    }
+        .single()
 
+      if (existing) {
+        const { error } = await supabase
+          .from('parametres_clinique')
+          .update({ ...form, updated_at: new Date().toISOString() })
+          .eq('user_id', userId)
+        if (error) { console.error('Error updating settings:', error); alert('Erreur lors de la sauvegarde.'); setSaving(false); return }
+      } else {
+        const { error } = await supabase
+          .from('parametres_clinique')
+          .insert([{ ...form, user_id: userId }])
+        if (error) { console.error('Error inserting settings:', error); alert('Erreur lors de la sauvegarde.'); setSaving(false); return }
+      }
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch (err) {
+      console.error('Unexpected error saving settings:', err)
+      alert('Erreur de connexion.')
+    }
     setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
   }
 
   const wilayas = ['Alger', 'Oran', 'Constantine', 'Annaba', 'Blida', 'Batna', 'Sétif', 'Tizi Ouzou', 'Béjaïa', 'Tlemcen', 'Adrar', 'Chlef', 'Laghouat', 'Oum El Bouaghi', 'Biskra', 'Béchar', 'Bouira', 'Tamanrasset', 'Tébessa', 'Tiaret', 'Djelfa', 'Jijel', 'Saïda', 'Skikda', 'Sidi Bel Abbès', 'Guelma', 'Médéa', 'Mostaganem', "M'Sila", 'Mascara', 'Ouargla', 'El Bayadh', 'Illizi', 'Bordj Bou Arréridj', 'Boumerdès', 'El Tarf', 'Tindouf', 'Tissemsilt', 'El Oued', 'Khenchela', 'Souk Ahras', 'Tipaza', 'Mila', 'Aïn Defla', 'Naâma', 'Aïn Témouchent', 'Ghardaïa', 'Relizane']

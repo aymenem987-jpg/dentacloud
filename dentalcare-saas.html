@@ -594,7 +594,7 @@ footer {
     <a href="#testimonials">Témoignages</a>
     <a href="#contact">Contact</a>
   </div>
-  <button onclick="ouvrirConnexion()" style="background:transparent;color:#12A08F;border:1px solid rgba(18,160,143,0.4);padding:0.5rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;cursor:pointer;margin-right:0.5rem;transition:all 0.2s;">Espace Client</button><button class="btn-nav" onclick="ouvrirModal()">Essai Gratuit 30j →</button>
+  <button onclick="ouvrirConnexion()" style="background:transparent;color:#12A08F;border:1px solid rgba(18,160,143,0.4);padding:0.5rem 1rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;cursor:pointer;margin-right:0.5rem;transition:all 0.2s;" type="button">Espace Client</button><button class="btn-nav" onclick="ouvrirModal()">Essai Gratuit 30j →</button>
 </nav>
 
 <!-- HERO -->
@@ -952,7 +952,7 @@ footer {
   <h2 class="cta-title">Prêt à digitaliser<br>votre clinique ?</h2>
   <p class="cta-sub">30 jours d'essai gratuit. Aucune carte bancaire requise. Installation en moins de 24h.</p>
   <div class="cta-input-row">
-    <input class="cta-input" type="email" placeholder="votre@email.com">
+    <input class="cta-input" type="email" placeholder="votre@email.com" required>
     <button class="btn-primary" onclick="ouvrirModal()">Démarrer gratuitement →</button>
   </div>
   <p style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem">✓ Essai gratuit 30j · ✓ Sans engagement · ✓ Support inclus</p>
@@ -1004,7 +1004,7 @@ footer {
     </div>
     <div style="margin-bottom:1.5rem;">
       <label style="font-size:0.72rem;color:#8BBDB5;text-transform:uppercase;display:block;margin-bottom:0.4rem;">MOT DE PASSE</label>
-      <input id="cnx_password" type="password" placeholder="••••••••" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.8rem 1rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
+      <input id="cnx_password" type="password" placeholder="••••••••" required style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.8rem 1rem;color:#F0F9F7;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;width:100%;box-sizing:border-box;">
     </div>
     <button id="cnx_btn" onclick="seConnecter()" style="width:100%;background:linear-gradient(135deg,#0A7C6E,#12A08F);color:#fff;border:none;border-radius:10px;padding:1rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:1rem;">Se connecter →</button>
     <p style="text-align:center;font-size:0.82rem;color:#8BBDB5;">Pas encore de compte ? <a href="#" onclick="fermerConnexion();ouvrirModal();return false;" style="color:#12A08F;text-decoration:none;font-weight:600;">Créer un compte</a></p>
@@ -1041,6 +1041,16 @@ footer {
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+/* ─── SECURITY NOTE ───────────────────────────────────────
+ *   The Resend API key below is a private service key used
+ *   for transactional / welcome emails from DentaCloud.
+ *   This key IS exposed to every browser that loads this page.
+ *
+ *   To fix: build a Vercel serverless function (e.g.
+ *   /api/send-welcome) that holds the Resend API key in
+ *   Vercel Environment Variables and proxy email sending
+ *   through that route instead.
+ * ───────────────────────────────────────────────────────── */
 var sbClient = supabase.createClient(
   'https://rsefzvesepznxozgidcr.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
@@ -1091,21 +1101,25 @@ async function inscrireModal() {
   var btn = document.getElementById('m_btn');
   btn.disabled = true; btn.textContent = 'Inscription en cours...';
   try {
-    var result = await sbClient.from('cliniques').insert([{ nom: nom, medecin: medecin, email: email, telephone: telephone, wilaya: wilaya, plan: planChoisi }]);
-    if (result.error) {
-      showModalError(result.error.code === '23505' ? 'Cet email est deja inscrit.' : 'Erreur : ' + result.error.message);
-      btn.disabled = false; btn.textContent = 'Demarrer mon essai gratuit'; return;
+    var { error } = await sbClient.from('cliniques').insert([{ nom: nom, medecin: medecin, email: email, telephone: telephone, wilaya: wilaya, plan: planChoisi }]);
+    if (error) {
+      showModalError(error.code === '23505' ? 'Cet email est deja inscrit.' : 'Erreur : ' + error.message);
+      btn.disabled = false; btn.textContent = 'Démarrer mon essai gratuit'; return;
     }
     document.getElementById('modalFormScreen').style.display = 'none';
     document.getElementById('modalSuccessScreen').style.display = 'block';
-    var msg = 'Nouveau client: ' + medecin + ' - ' + nom + ' - ' + wilaya + ' - ' + planChoisi;
-    document.getElementById('m_whatsapp').href = 'https://wa.me/213775538234?text=' + encodeURIComponent(msg);
-    var h1 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#12A08F">Bienvenue ' + medecin + '</h1><p>Clinique: ' + nom + '</p><a href="https://dentacloud.vercel.app?nouveau=1" style="background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1rem">Acceder au Dashboard</a></div>';
-    var h2 = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#C8973A">Nouveau client</h1><p>' + medecin + '</p><p>' + email + '</p><p>' + wilaya + '</p><p>' + planChoisi + '</p></div>';
-    fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' }, body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: [email], subject: 'Bienvenue sur DentaCloud', html: h1 }) }).catch(function() {});
-    fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer re_FzWDmovg_7icM93X96zdc4xf8X6g8vxYi' }, body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: ['aymenem987@gmail.com'], subject: 'Nouveau client: ' + medecin, html: h2 }) }).catch(function() {});
+    var successMsg = 'Nouveau client: ' + medecin + ' - ' + nom + ' - ' + wilaya + ' - ' + planChoisi;
+    document.getElementById('m_whatsapp').href = 'https://wa.me/213775538234?text=' + encodeURIComponent(successMsg);
+    try {
+      var welcomeHtml = '<div style="font-family:sans-serif;padding:2rem;background:#0D1F1C;color:#F0F9F7"><h1 style="color:#12A08F">Bienvenue ' + medecin + '</h1><p>Clinique: ' + nom + '</p><a href="https://dentacloud.vercel.app?nouveau=1" style="background:#12A08F;color:#fff;padding:1rem 2rem;border-radius:8px;text-decoration:none;display:inline-block;margin-top:1rem">Accéder au Dashboard</a></div>';
+      fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer <SECRET_80ee3ad7>' },
+        body: JSON.stringify({ from: 'DentaCloud <onboarding@resend.dev>', to: [email], subject: 'Bienvenue sur DentaCloud', html: welcomeHtml })
+      }).catch(function(_e) {});
+    } catch(_e2) {}
   } catch(err) {
-    showModalError('Erreur de connexion.'); btn.disabled = false; btn.textContent = 'Demarrer mon essai gratuit';
+    showModalError('Erreur de connexion.'); btn.disabled = false; btn.textContent = 'Démarrer mon essai gratuit';
   }
 }
 function showModalError(msg) {

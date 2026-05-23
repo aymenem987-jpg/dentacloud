@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  'https://rsefzvesepznxozgidcr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 )
 
 const card = { background: 'rgba(19,36,32,0.8)', border: '1px solid rgba(18,160,143,0.15)', borderRadius: '12px' }
@@ -18,32 +18,47 @@ export default function Patients() {
   const [saving, setSaving] = useState(false)
   const [userId, setUserId] = useState(null)
 
+  async function fetchPatients(uid) {
+    try {
+      const { data, error } = await supabase.from('patients').select('*').eq('user_id', uid).order('created_at', { ascending: false })
+      if (error) { console.error('Error fetching patients:', error) }
+      setPatients(data || [])
+    } catch (err) {
+      console.error('Unexpected error fetching patients:', err)
+      setPatients([])
+    }
+    setLoading(false)
+  }
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) { setUserId(user.id); fetchPatients(user.id) }
     })
   }, [])
 
-  async function fetchPatients(uid) {
-    const { data } = await supabase.from('patients').select('*').eq('user_id', uid).order('created_at', { ascending: false })
-    setPatients(data || [])
-    setLoading(false)
-  }
-
   async function ajouterPatient() {
     if (!form.nom || !form.prenom) return
     setSaving(true)
-    await supabase.from('patients').insert([{ ...form, user_id: userId }])
-    setForm({ nom: '', prenom: '', telephone: '', date_naissance: '' })
-    setShowForm(false)
+    try {
+      const { error } = await supabase.from('patients').insert([{ ...form, user_id: userId }])
+      if (error) { console.error('Error adding patient:', error); alert('Erreur lors de l\'ajout du patient.'); setSaving(false); return }
+      setForm({ nom: '', prenom: '', telephone: '', date_naissance: '' })
+      setShowForm(false)
+      fetchPatients(userId)
+    } catch (err) {
+      console.error('Unexpected error adding patient:', err)
+      alert('Erreur de connexion.')
+    }
     setSaving(false)
-    fetchPatients(userId)
   }
 
   async function supprimerPatient(id) {
     if (!confirm('Supprimer ce patient ?')) return
-    await supabase.from('patients').delete().eq('id', id)
-    fetchPatients(userId)
+    try {
+      const { error } = await supabase.from('patients').delete().eq('id', id)
+      if (error) { console.error('Error deleting patient:', error); alert('Erreur lors de la suppression.'); return }
+      fetchPatients(userId)
+    } catch (err) { console.error('Unexpected error deleting patient:', err) }
   }
 
   const filtered = patients.filter(p =>

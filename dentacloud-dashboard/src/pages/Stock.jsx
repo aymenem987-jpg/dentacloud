@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  'https://rsefzvesepznxozgidcr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 )
 
 const card = {
@@ -49,6 +49,18 @@ export default function Stock() {
     quantite_min: 5, unite: 'unité', prix_unitaire: '', fournisseur: ''
   })
 
+  async function fetchStock(uid) {
+    try {
+      const { data, error } = await supabase.from('stock').select('*').eq('user_id', uid).order('nom')
+      if (error) { console.error('Error fetching stock:', error) }
+      setArticles(data || [])
+    } catch (err) {
+      console.error('Unexpected error fetching stock:', err)
+      setArticles([])
+    }
+    setLoading(false)
+  }
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -58,47 +70,52 @@ export default function Stock() {
     })
   }, [])
 
-  async function fetchStock(uid) {
-    const { data } = await supabase
-      .from('stock')
-      .select('*')
-      .eq('user_id', uid)
-      .order('nom')
-    setArticles(data || [])
-    setLoading(false)
-  }
-
   async function handleSave() {
     if (!form.nom) return
-    if (editItem) {
-      await supabase.from('stock').update({ ...form, updated_at: new Date().toISOString() }).eq('id', editItem.id)
-    } else {
-      await supabase.from('stock').insert([{ ...form, user_id: userId }])
+    try {
+      if (editItem) {
+        const { error } = await supabase.from('stock').update({ ...form, updated_at: new Date().toISOString() }).eq('id', editItem.id)
+        if (error) { console.error('Error updating stock item:', error); alert('Erreur lors de la modification.'); return }
+      } else {
+        const { error } = await supabase.from('stock').insert([{ ...form, user_id: userId }])
+        if (error) { console.error('Error adding stock item:', error); alert('Erreur lors de l\'ajout.'); return }
+      }
+      setShowForm(false)
+      setEditItem(null)
+      resetForm()
+      fetchStock(userId)
+    } catch (err) {
+      console.error('Unexpected error saving stock item:', err)
+      alert('Erreur de connexion.')
     }
-    setShowForm(false)
-    setEditItem(null)
-    resetForm()
-    fetchStock(userId)
   }
 
   async function handleDelete(id) {
     if (!confirm('Supprimer cet article ?')) return
-    await supabase.from('stock').delete().eq('id', id)
-    fetchStock(userId)
+    try {
+      const { error } = await supabase.from('stock').delete().eq('id', id)
+      if (error) { console.error('Error deleting stock item:', error); alert('Erreur lors de la suppression.'); return }
+      fetchStock(userId)
+    } catch (err) { console.error('Unexpected error deleting stock item:', err) }
   }
 
   async function handleQuantite(id, delta) {
     const item = articles.find(a => a.id === id)
     if (!item) return
     const newQty = Math.max(0, item.quantite + delta)
-    await supabase.from('stock').update({ quantite: newQty }).eq('id', id)
-    fetchStock(userId)
+    try {
+      const { error } = await supabase.from('stock').update({ quantite: newQty }).eq('id', id)
+      if (error) { console.error('Error updating quantity:', error); alert('Erreur lors de la mise à jour de la quantité.'); return }
+      fetchStock(userId)
+    } catch (err) { console.error('Unexpected error updating quantity:', err) }
   }
 
   async function loadArticlesDefaut() {
     const inserts = articlesDefaut.map(a => ({ ...a, user_id: userId }))
-    await supabase.from('stock').insert(inserts)
-    fetchStock(userId)
+    try {
+      await supabase.from('stock').insert(inserts)
+      fetchStock(userId)
+    } catch (err) { console.error('Unexpected error loading default articles:', err) }
   }
 
   function resetForm() {

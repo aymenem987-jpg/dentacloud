@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  'https://rsefzvesepznxozgidcr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 )
 
 const inputStyle = {
@@ -30,20 +30,20 @@ export default function Login({ onLogin }) {
   const [success, setSuccess] = useState('')
 
   useEffect(() => {
-  const params = new URLSearchParams(window.location.search)
-  const access_token = params.get('access_token')
-  const refresh_token = params.get('refresh_token')
-  
-  if (access_token && refresh_token) {
-    supabase.auth.setSession({ access_token, refresh_token }).then(({ data }) => {
-      if (data.session) onLogin()
-    })
-  } else {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) onLogin()
-    })
-  }
-}, [])
+    const params = new URLSearchParams(window.location.search)
+    const access_token = params.get('access_token')
+    const refresh_token = params.get('refresh_token')
+
+    if (access_token && refresh_token) {
+      supabase.auth.setSession({ access_token, refresh_token }).then(({ data }) => {
+        if (data.session) onLogin()
+      })
+    } else {
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) onLogin()
+      })
+    }
+  }, [onLogin])
 
   async function handleLogin(e) {
     e.preventDefault()
@@ -70,7 +70,7 @@ export default function Login({ onLogin }) {
 
   return (
     <div style={{
-      minHeight: '100vh', minHeight: '100dvh',
+      minHeight: '100dvh',  /* modern browsers; 100vh used as comment fallback below */
       background: '#0D1F1C',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontFamily: "'DM Sans', sans-serif",

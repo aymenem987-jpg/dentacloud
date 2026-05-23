@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  'https://rsefzvesepznxozgidcr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 )
 
 const card = { background: 'rgba(19,36,32,0.8)', border: '1px solid rgba(18,160,143,0.15)', borderRadius: '12px' }
@@ -19,41 +19,57 @@ export default function Agenda() {
   const [saving, setSaving] = useState(false)
   const [userId, setUserId] = useState(null)
 
+  async function fetchAll(uid) {
+    try {
+      const [{ data: rdvData, error: rdvErr }, { data: patData, error: patErr }] = await Promise.all([
+        supabase.from('rendez_vous').select('*, patients(nom, prenom)').eq('user_id', uid).order('date_heure', { ascending: true }),
+        supabase.from('patients').select('id, nom, prenom').eq('user_id', uid).order('nom')
+      ])
+      if (rdvErr) console.error('Error fetching rendez-vous:', rdvErr)
+      if (patErr) console.error('Error fetching patients:', patErr)
+      setRdvs(rdvData || [])
+      setPatients(patData || [])
+    } catch (err) {
+      console.error('Unexpected error in fetchAll:', err)
+      setRdvs([]); setPatients([])
+    }
+    setLoading(false)
+  }
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) { setUserId(user.id); fetchAll(user.id) }
     })
   }, [])
 
-  async function fetchAll(uid) {
-    const [{ data: rdvData }, { data: patData }] = await Promise.all([
-      supabase.from('rendez_vous').select('*, patients(nom, prenom)').eq('user_id', uid).order('date_heure', { ascending: true }),
-      supabase.from('patients').select('id, nom, prenom').eq('user_id', uid).order('nom')
-    ])
-    setRdvs(rdvData || [])
-    setPatients(patData || [])
-    setLoading(false)
-  }
-
   async function ajouterRdv() {
     if (!form.patient_id || !form.date_heure) return
     setSaving(true)
-    await supabase.from('rendez_vous').insert([{ ...form, user_id: userId }])
-    setForm({ patient_id: '', date_heure: '', type_soin: 'Consultation', statut: 'en_attente' })
-    setShowForm(false)
+    try {
+      const { error } = await supabase.from('rendez_vous').insert([{ ...form, user_id: userId }])
+      if (error) { console.error('Error adding rendez-vous:', error); alert('Erreur lors de l\'ajout du rendez-vous.'); setSaving(false); return }
+      setForm({ patient_id: '', date_heure: '', type_soin: 'Consultation', statut: 'en_attente' })
+      setShowForm(false)
+      fetchAll(userId)
+    } catch (err) { console.error('Unexpected error adding rendez-vous:', err); alert('Erreur de connexion.') }
     setSaving(false)
-    fetchAll(userId)
   }
 
   async function changerStatut(id, statut) {
-    await supabase.from('rendez_vous').update({ statut }).eq('id', id)
-    fetchAll(userId)
+    try {
+      const { error } = await supabase.from('rendez_vous').update({ statut }).eq('id', id)
+      if (error) { console.error('Error updating rendez-vous status:', error); return }
+      fetchAll(userId)
+    } catch (err) { console.error('Unexpected error updating rendez-vous status:', err) }
   }
 
   async function supprimerRdv(id) {
     if (!confirm('Supprimer ce rendez-vous ?')) return
-    await supabase.from('rendez_vous').delete().eq('id', id)
-    fetchAll(userId)
+    try {
+      const { error } = await supabase.from('rendez_vous').delete().eq('id', id)
+      if (error) { console.error('Error deleting rendez-vous:', error); alert('Erreur lors de la suppression.'); return }
+      fetchAll(userId)
+    } catch (err) { console.error('Unexpected error deleting rendez-vous:', err) }
   }
 
   const statusColor = {

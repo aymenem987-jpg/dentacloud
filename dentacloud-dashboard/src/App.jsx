@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
 import { createClient } from '@supabase/supabase-js'
 import Dashboard from './pages/Dashboard'
@@ -10,8 +10,8 @@ import Parametres from './pages/Parametres'
 import Stock from './pages/Stock'
 
 const supabase = createClient(
-  'https://rsefzvesepznxozgidcr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA'
+  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 )
 
 const menuItems = [
@@ -147,21 +147,17 @@ export default function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768)
 
   useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) {
-        setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
+    const updateLayout = () => {
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+      setSidebarOpen(!mobile)
+    }
+    window.addEventListener('resize', updateLayout)
+    updateLayout()
+    return () => window.removeEventListener('resize', updateLayout)
   }, [])
 
   useEffect(() => {
@@ -209,6 +205,10 @@ export default function App() {
     setSession(null)
   }
 
+  const handleLoginRefetch = useCallback(() =>
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+  , [setSession])
+
   if (loading) return (
     <div style={{
       minHeight: '100vh', background: '#0D1F1C',
@@ -220,9 +220,7 @@ export default function App() {
   )
 
   if (!session) return (
-    <Login onLogin={() =>
-      supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-    } />
+    <Login onLogin={handleLoginRefetch} />
   )
 
   const userEmail = session.user.email
@@ -306,9 +304,9 @@ export default function App() {
               <Route path="/agenda" element={<Agenda />} />
               <Route path="/patients" element={<Patients />} />
               <Route path="/facturation" element={<Facturation />} />
-              <Route path="*" element={<Navigate to="/" />} />
               <Route path="/parametres" element={<Parametres />} />
               <Route path="/stock" element={<Stock />} />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
         </div>

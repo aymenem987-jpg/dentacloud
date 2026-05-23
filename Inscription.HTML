@@ -504,7 +504,7 @@ select option { background: var(--dark); }
     const email     = document.getElementById('email').value.trim();
     const telephone = document.getElementById('telephone').value.trim();
     const wilaya    = document.getElementById('wilaya').value;
-    const plan      = document.querySelector('input[name="plan"]:checked').value;
+    const plan      = document.querySelector('input[name="plan"]:checked')?.value || 'starter';
 
     // Validation
     if (!medecin || !nom || !email || !telephone || !wilaya) {
@@ -531,6 +531,7 @@ select option { background: var(--dark); }
         if (error.code === '23505') {
           showError('⚠️ Cet email est déjà inscrit. Essayez de vous connecter.');
         } else {
+          console.error('[Inscription] insert error:', error.message)
           showError('❌ Erreur : ' + error.message);
         }
         btn.disabled = false;
@@ -549,6 +550,7 @@ select option { background: var(--dark); }
         `https://wa.me/213775538234?text=${encodeURIComponent(msg)}`;
 
     } catch (err) {
+      console.error('[Inscription] unexpected error:', err)
       showError('❌ Erreur de connexion. Vérifiez votre internet.');
       btn.disabled = false;
       btn.innerHTML = 'Démarrer mon essai gratuit →';
