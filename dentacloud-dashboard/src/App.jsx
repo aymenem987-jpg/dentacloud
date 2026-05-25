@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from './lib/supabaseClient'
 import Dashboard from './pages/Dashboard'
 import Patients from './pages/Patients'
 import Agenda from './pages/Agenda'
@@ -9,10 +9,10 @@ import Login from './pages/Login'
 import Parametres from './pages/Parametres'
 import Stock from './pages/Stock'
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-)
+// ═══════════════════════════════════════════════════════════════════════════
+// Supabase client is imported from src/lib/supabaseClient.js — this is the
+// single source of truth.  Do NOT call createClient() in any other file.
+// ═══════════════════════════════════════════════════════════════════════════
 
 const menuItems = [
   { path: '/', icon: '📊', label: 'Tableau de bord' },

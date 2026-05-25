@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../lib/supabaseClient'
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || 'https://rsefzvesepznxozgidcr.supabase.co',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-)
+// ═══════════════════════════════════════════════════════════════════════════
+// Supabase client imported from src/lib/supabaseClient.js
+// Do NOT call createClient() in any other file.
+// ═══════════════════════════════════════════════════════════════════════════
 
 const card = { background: 'rgba(19,36,32,0.8)', border: '1px solid rgba(18,160,143,0.15)', borderRadius: '12px' }
 const inp = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.65rem 0.9rem', color: '#F0F9F7', fontFamily: "'DM Sans',sans-serif", fontSize: '0.875rem', outline: 'none', width: '100%' }
