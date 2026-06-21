@@ -1,22 +1,39 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import type { CSSProperties } from 'react'
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Supabase client imported from src/lib/supabaseClient.js
-// Do NOT call createClient() in any other file.
-// ═══════════════════════════════════════════════════════════════════════════
+const card: CSSProperties = {
+  background: 'rgba(19,36,32,0.8)',
+  border: '1px solid rgba(18,160,143,0.15)',
+  borderRadius: '12px',
+  padding: '1.2rem'
+}
 
-const card = { background: 'rgba(19,36,32,0.8)', border: '1px solid rgba(18,160,143,0.15)', borderRadius: '12px', padding: '1.2rem' }
+interface Plan {
+  nom: string
+  prix: string
+  desc: string
+  couleur: string
+  populaire?: boolean
+  features: string[]
+}
 
-const plans = [
+interface Rdv {
+  patients?: { nom: string; prenom: string }
+  date_heure: string
+  type_soin?: string
+  statut?: string
+}
+
+const plans: Plan[] = [
   { nom: 'Starter', prix: '4 900', desc: 'Idéal pour cabinet solo', couleur: '#12A08F', features: ['1 dentiste', 'Agenda & Rendez-vous', 'Dossiers patients illimités', 'Facturation simple', '100 SMS / mois'] },
   { nom: 'Clinique Pro', prix: '9 900', desc: 'Pour cliniques multi-praticiens', couleur: '#C8973A', populaire: true, features: ["Jusqu'à 5 dentistes", 'Tout Starter inclus', 'Gestion des stocks', 'CNAS/CASNOS', '500 SMS / mois', 'Rapports & analytics'] },
   { nom: 'Réseau', prix: '24 900', desc: 'Pour groupes de cliniques', couleur: '#7C3AED', features: ['Praticiens illimités', 'Tout Pro inclus', 'Multi-établissements', 'SMS illimités', 'Manager dédié', 'SLA 99.9%'] },
 ]
 
-function PopupPlans({ onClose }) {
+function PopupPlans({ onClose }: { onClose: () => void }) {
   return (
-    <div onClick={e => e.target === e.currentTarget && onClose()} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+    <div onClick={(e: React.MouseEvent<HTMLDivElement>) => e.target === e.currentTarget && onClose()} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
       <div style={{ background: 'rgba(13,31,28,0.98)', border: '1px solid rgba(18,160,143,0.2)', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '860px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#8BBDB5', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontSize: '1.1rem' }}>✕</button>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -53,29 +70,29 @@ function PopupPlans({ onClose }) {
 
 export default function Dashboard() {
   const [stats, setStats] = useState({ patients: 0, rdv: 0 })
-  const [rdvList, setRdvList] = useState([])
+  const [rdvList, setRdvList] = useState<Rdv[]>([])
   const [loading, setLoading] = useState(true)
   const [userName, setUserName] = useState('')
-  const [joursRestants, setJoursRestants] = useState(null)
+  const [joursRestants, setJoursRestants] = useState<number | null>(null)
   const [abonnementStatut, setAbonnementStatut] = useState('essai')
   const [showPlans, setShowPlans] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
-        setUserName(user.email.split('@')[0])
+        setUserName((user.email ?? '').split('@')[0] ?? '')
         fetchData(user.id)
-        fetchAbonnement(user.email)
+        fetchAbonnement(user.id)
       }
     })
   }, [])
 
-  async function fetchAbonnement(email) {
+  async function fetchAbonnement(uid: string) {
     try {
       const { data, error } = await supabase
         .from('cliniques')
         .select('date_expiration, plan_actif, abonnement_statut')
-        .ilike('email', email)
+        .eq('user_id', uid)
         .maybeSingle()
 
       if (error) console.error('Error fetching subscription:', error)
@@ -83,7 +100,7 @@ export default function Dashboard() {
       if (data) {
         setAbonnementStatut(data.abonnement_statut || 'essai')
         if (data.date_expiration) {
-          const diff = new Date(data.date_expiration) - new Date()
+          const diff = new Date(data.date_expiration).getTime() - new Date().getTime()
           setJoursRestants(Math.ceil(diff / (1000 * 60 * 60 * 24)))
         } else {
           setJoursRestants(30)
@@ -99,7 +116,7 @@ export default function Dashboard() {
     }
   }
 
-  async function fetchData(uid) {
+  async function fetchData(uid: string) {
     try {
       const responses = await Promise.all([
         supabase.from('patients').select('*', { count: 'exact', head: true }).eq('user_id', uid),
@@ -111,7 +128,7 @@ export default function Dashboard() {
       if (errRdv) console.error('Error fetching rendez-vous count:', errRdv)
       if (errRdvData) console.error('Error fetching rendez-vous list:', errRdvData)
       setStats({ patients: nbPatients || 0, rdv: nbRdv || 0 })
-      setRdvList(rdvData || [])
+      setRdvList((rdvData as Rdv[]) || [])
     } catch (err) {
       console.error('Unexpected error in fetchData:', err)
       setStats({ patients: 0, rdv: 0 })
@@ -130,7 +147,6 @@ export default function Dashboard() {
     { label: 'Recettes (DZD)', value: '—', icon: '💰', color: '#059669', delta: 'Bientôt disponible' },
     { label: 'Satisfaction', value: '98%', icon: '⭐', color: '#12A08F', delta: 'Excellent' },
   ]
-
 
   const renderBanniere = () => {
     if (abonnementStatut === 'actif' || joursRestants === null) return null
@@ -162,13 +178,11 @@ export default function Dashboard() {
         <p style={{ color: '#8BBDB5', fontSize: '0.875rem' }}>Voici un aperçu de votre activité</p>
       </div>
 
-
       {renderBanniere()}
-
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         {kpis.map((k, i) => (
-          <div key={i} style={{ ...card, transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+          <div key={i} style={{ ...card, transition: 'transform 0.2s' }} onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)'} onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
               <span style={{ fontSize: '0.7rem', color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k.label}</span>
               <span style={{ fontSize: '1.3rem' }}>{k.icon}</span>
@@ -178,7 +192,7 @@ export default function Dashboard() {
           </div>
         ))}
       </div>
-    
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         <div style={card}>
           <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>Activité — 7 derniers jours</div>
@@ -199,7 +213,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-
       <div style={{ ...card, padding: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.2rem', borderBottom: '1px solid rgba(18,160,143,0.1)' }}>
           <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Derniers rendez-vous</span>
@@ -213,7 +226,7 @@ export default function Dashboard() {
             {loading ? <div style={{ textAlign: 'center', padding: '2rem', color: '#8BBDB5' }}>Chargement...</div>
             : rdvList.length === 0 ? <div style={{ textAlign: 'center', padding: '2rem', color: '#8BBDB5' }}>💡 Ajoutez des rendez-vous dans la section Agenda</div>
             : rdvList.map((rdv, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '0.5rem', padding: '0.6rem 1rem', borderTop: '1px solid rgba(18,160,143,0.05)', fontSize: '0.78rem', transition: 'background 0.15s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(18,160,143,0.04)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '0.5rem', padding: '0.6rem 1rem', borderTop: '1px solid rgba(18,160,143,0.05)', fontSize: '0.78rem', transition: 'background 0.15s' }} onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'rgba(18,160,143,0.04)'} onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'transparent'}>
                 <span style={{ fontWeight: 500 }}>{rdv.patients ? `${rdv.patients.prenom} ${rdv.patients.nom}` : 'Patient'}</span>
                 <span style={{ color: '#8BBDB5', fontSize: '0.7rem' }}>{new Date(rdv.date_heure).toLocaleDateString('fr-DZ')}</span>
                 <span style={{ color: '#8BBDB5' }}>{rdv.type_soin || '—'}</span>

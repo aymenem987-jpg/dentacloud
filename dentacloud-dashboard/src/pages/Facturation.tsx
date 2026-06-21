@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 
-const card = { background: 'rgba(19,36,32,0.8)', border: '1px solid rgba(18,160,143,0.15)', borderRadius: '12px' }
-const input = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.65rem 0.9rem', color: '#F0F9F7', fontFamily: "'DM Sans',sans-serif", fontSize: '0.875rem', outline: 'none', width: '100%', boxSizing: 'border-box' }
+const card: CSSProperties = { background: 'rgba(19,36,32,0.8)', border: '1px solid rgba(18,160,143,0.15)', borderRadius: '12px' }
+const input: CSSProperties = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.65rem 0.9rem', color: '#F0F9F7', fontFamily: "'DM Sans',sans-serif", fontSize: '0.875rem', outline: 'none', width: '100%', boxSizing: 'border-box' }
 
 const SOINS_CNAS = [
   { soin: 'Détartrage', taux: 80 },
@@ -12,7 +12,20 @@ const SOINS_CNAS = [
   { soin: 'Radiographie', taux: 80 },
 ]
 
-const FACTURES_DEMO = [
+type Facture = {
+  id: string
+  patient: string
+  soin: string
+  montant: number
+  statut: string
+  date: string
+  cnas: boolean
+  casnos: boolean
+  taux_remb: number
+  montant_remb: number
+}
+
+const FACTURES_DEMO: Facture[] = [
   { id: 'FAC-001', patient: 'Ahmed Benali', soin: 'Détartrage', montant: 3500, statut: 'payee', date: '2026-03-10', cnas: false, casnos: false, taux_remb: 0, montant_remb: 0 },
   { id: 'FAC-002', patient: 'Fatima Oukil', soin: 'Obturation amalgame', montant: 8000, statut: 'en_attente', date: '2026-03-09', cnas: true, casnos: false, taux_remb: 80, montant_remb: 6400 },
   { id: 'FAC-003', patient: 'Karim Meziane', soin: 'Orthodontie', montant: 45000, statut: 'partielle', date: '2026-03-08', cnas: false, casnos: true, taux_remb: 30, montant_remb: 13500 },
@@ -21,7 +34,7 @@ const FACTURES_DEMO = [
 ]
 
 export default function Facturation() {
-  const [factures, setFactures] = useState(FACTURES_DEMO)
+  const [factures, setFactures] = useState<Facture[]>(FACTURES_DEMO)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ patient: '', soin: '', montant: '', cnas: false, casnos: false, taux_remb: 0 })
 
@@ -30,33 +43,37 @@ export default function Facturation() {
   const totalRemb = factures.reduce((s, f) => s + (f.montant_remb || 0), 0)
   const facturesCnas = factures.filter(f => f.cnas || f.casnos).length
 
-  function handleCouverture(type, checked) {
+  function handleCouverture(type: string, checked: boolean) {
     const newForm = { ...form, cnas: type === 'cnas' ? checked : false, casnos: type === 'casnos' ? checked : false }
     if (!checked) newForm.taux_remb = 0
     setForm(newForm)
   }
 
-  function handleSoinChange(soin) {
+  function handleSoinChange(soin: string) {
     const found = SOINS_CNAS.find(s => s.soin === soin)
     setForm(f => ({ ...f, soin, taux_remb: (f.cnas || f.casnos) && found ? found.taux : f.taux_remb }))
   }
 
-  function calcRemb() {
-    const montant = parseInt(form.montant) || 0
-    const taux = parseInt(form.taux_remb) || 0
+  function calcRemb(): number {
+    const montant = Number(form.montant) || 0
+    const taux = Number(form.taux_remb) || 0
     return Math.round(montant * taux / 100)
   }
 
   function ajouterFacture() {
     if (!form.patient || !form.montant) return
     const montant_remb = calcRemb()
-    const newF = {
+    const isoDate = new Date().toISOString().split('T')
+    const newF: Facture = {
       id: 'FAC-00' + (factures.length + 1),
-      patient: form.patient, soin: form.soin,
-      montant: parseInt(form.montant), statut: 'en_attente',
-      date: new Date().toISOString().split('T')[0],
-      cnas: form.cnas, casnos: form.casnos,
-      taux_remb: parseInt(form.taux_remb) || 0,
+      patient: form.patient,
+      soin: form.soin,
+      montant: parseInt(form.montant),
+      statut: 'en_attente',
+      date: isoDate[0] ?? '2026-01-01',
+      cnas: form.cnas,
+      casnos: form.casnos,
+      taux_remb: form.taux_remb,
       montant_remb,
     }
     setFactures([newF, ...factures])
@@ -64,15 +81,17 @@ export default function Facturation() {
     setShowForm(false)
   }
 
-  function changerStatut(id, statut) {
+  function changerStatut(id: string, statut: string) {
     setFactures(factures.map(f => f.id === id ? { ...f, statut } : f))
   }
 
-  const statusStyle = {
+  const statutColors: Record<string, { bg: string; color: string }> = {
     payee: { bg: 'rgba(76,175,138,0.15)', color: '#4CAF8A' },
     en_attente: { bg: 'rgba(200,151,58,0.15)', color: '#E8B55A' },
     partielle: { bg: 'rgba(124,58,237,0.15)', color: '#A78BFA' },
   }
+
+  const defaultColor = { bg: 'rgba(200,151,58,0.15)', color: '#E8B55A' }
 
   return (
     <div>
@@ -91,7 +110,7 @@ export default function Facturation() {
           { label: 'Total encaissé', value: totalPayee.toLocaleString() + ' DZD', color: '#4CAF8A', icon: '✅' },
           { label: 'En attente', value: totalAttente.toLocaleString() + ' DZD', color: '#E8B55A', icon: '⏳' },
           { label: 'Remboursements', value: totalRemb.toLocaleString() + ' DZD', color: '#12A08F', icon: '🏥' },
-          { label: 'CNAS/CASNOS', value: facturesCnas, color: '#7C3AED', icon: '📋' },
+          { label: 'CNAS/CASNOS', value: String(facturesCnas), color: '#7C3AED', icon: '📋' },
         ].map((k, i) => (
           <div key={i} style={{ ...card, padding: '1.2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
@@ -108,11 +127,11 @@ export default function Facturation() {
           <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1.2rem' }}>Nouvelle facture</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Nom du patient *</label>
+              <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Nom du patient *</label>
               <input style={input} value={form.patient} onChange={e => setForm({ ...form, patient: e.target.value })} placeholder="Ahmed Benali" />
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Type de soin</label>
+              <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Type de soin</label>
               <select style={{ ...input, background: '#132420' }} value={form.soin} onChange={e => handleSoinChange(e.target.value)}>
                 <option value="">Choisir...</option>
                 {SOINS_CNAS.map(s => <option key={s.soin}>{s.soin}</option>)}
@@ -122,7 +141,7 @@ export default function Facturation() {
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Montant (DZD) *</label>
+              <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Montant (DZD) *</label>
               <input style={input} type="number" value={form.montant} onChange={e => setForm({ ...form, montant: e.target.value })} placeholder="5000" />
             </div>
           </div>
@@ -152,7 +171,9 @@ export default function Facturation() {
             {(form.cnas || form.casnos) && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Taux remboursement</label>
+                  <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>
+                    Taux remboursement: {form.taux_remb}%
+                  </label>
                   <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                     {[30, 50, 80, 100].map(t => (
                       <button key={t} onClick={() => setForm({ ...form, taux_remb: t })} style={{ padding: '0.3rem 0.7rem', borderRadius: '6px', border: '1px solid ' + (form.taux_remb === t ? '#12A08F' : 'rgba(255,255,255,0.1)'), background: form.taux_remb === t ? 'rgba(18,160,143,0.2)' : 'transparent', color: form.taux_remb === t ? '#12A08F' : '#8BBDB5', cursor: 'pointer', fontSize: '0.78rem', fontFamily: "'DM Sans', sans-serif" }}>
@@ -162,9 +183,9 @@ export default function Facturation() {
                   </div>
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Montant remboursé</label>
+                  <label style={{ fontSize: '0.72rem', color: '#8BBDB5', textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block', marginBottom: '0.35rem' }}>Montant remboursé</label>
                   <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.5rem', fontWeight: 700, color: '#12A08F' }}>{calcRemb().toLocaleString()} DZD</div>
-                  <div style={{ fontSize: '0.68rem', color: '#8BBDB5' }}>Reste: {(parseInt(form.montant || 0) - calcRemb()).toLocaleString()} DZD</div>
+                  <div style={{ fontSize: '0.68rem', color: '#8BBDB5' }}>Reste: {(parseInt(form.montant || '0') - calcRemb()).toLocaleString()} DZD</div>
                 </div>
               </div>
             )}
@@ -183,11 +204,11 @@ export default function Facturation() {
             <span>N°</span><span>Patient</span><span>Soin</span><span>Montant</span><span>Couverture</span><span>Statut</span><span>Date</span>
           </div>
           {factures.map((f, i) => {
-            const s = statusStyle[f.statut] || statusStyle.en_attente
+            const s = statutColors[f.statut] ?? defaultColor
             return (
               <div key={f.id} style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.5fr 1.5fr 1fr 0.8fr 0.8fr 0.8fr', gap: '0.5rem', padding: '0.8rem 1rem', borderTop: i > 0 ? '1px solid rgba(18,160,143,0.05)' : 'none', fontSize: '0.82rem', alignItems: 'center', transition: 'background 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(18,160,143,0.04)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'rgba(18,160,143,0.04)'}
+                onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'transparent'}>
                 <span style={{ fontFamily: 'monospace', fontSize: '0.68rem', color: '#12A08F' }}>{f.id}</span>
                 <span style={{ fontWeight: 500 }}>{f.patient}</span>
                 <span style={{ color: '#8BBDB5', fontSize: '0.78rem' }}>{f.soin}</span>

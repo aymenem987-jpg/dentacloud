@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import type { CSSProperties } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -6,7 +7,7 @@ import { supabase } from '../lib/supabaseClient'
 // Do NOT call createClient() in any other file.
 // ═══════════════════════════════════════════════════════════════════════════
 
-const inputStyle = {
+const inputStyle: CSSProperties = {
   background: 'rgba(255,255,255,0.04)',
   border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: '8px',
@@ -20,7 +21,7 @@ const inputStyle = {
   WebkitAppearance: 'none',
 }
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin }: { onLogin: () => void }) {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -45,7 +46,7 @@ export default function Login({ onLogin }) {
     }
   }, [onLogin])
 
-  async function handleLogin(e) {
+   async function handleLogin(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -55,7 +56,7 @@ export default function Login({ onLogin }) {
     setLoading(false)
   }
 
-  async function handleRegister(e) {
+   async function handleRegister(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault()
     setLoading(true)
     setError('')

@@ -1,47 +1,48 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import type { CSSProperties } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Supabase client imported from src/lib/supabaseClient.js
 // Do NOT call createClient() in any other file.
 // ═══════════════════════════════════════════════════════════════════════════
 
-const card = {
-  background: 'rgba(19,36,32,0.8)',
-  border: '1px solid rgba(18,160,143,0.15)',
-  borderRadius: '12px',
-  padding: '1.5rem',
-  marginBottom: '1.5rem',
-}
+const card: CSSProperties = {
+   background: 'rgba(19,36,32,0.8)',
+   border: '1px solid rgba(18,160,143,0.15)',
+   borderRadius: '12px',
+   padding: '1.5rem',
+   marginBottom: '1.5rem',
+ }
 
-const inputStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '8px',
-  padding: '0.75rem 1rem',
-  color: '#F0F9F7',
-  fontFamily: "'DM Sans', sans-serif",
-  fontSize: '0.9rem',
-  outline: 'none',
-  width: '100%',
-  boxSizing: 'border-box',
-  transition: 'border-color 0.2s',
-}
+const inputStyle: CSSProperties = {
+   background: 'rgba(255,255,255,0.04)',
+   border: '1px solid rgba(255,255,255,0.1)',
+   borderRadius: '8px',
+   padding: '0.75rem 1rem',
+   color: '#F0F9F7',
+   fontFamily: "'DM Sans', sans-serif",
+   fontSize: '0.9rem',
+   outline: 'none',
+   width: '100%',
+   boxSizing: 'border-box',
+   transition: 'border-color 0.2s',
+ }
 
-const labelStyle = {
-  fontSize: '0.75rem',
-  color: '#8BBDB5',
-  textTransform: 'uppercase',
-  letterSpacing: '0.04em',
-  display: 'block',
-  marginBottom: '0.4rem',
-}
+const labelStyle: CSSProperties = {
+   fontSize: '0.75rem',
+   color: '#8BBDB5',
+   textTransform: 'uppercase',
+   letterSpacing: '0.04em',
+   display: 'block',
+   marginBottom: '0.4rem',
+ }
 
 export default function Parametres() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [userId, setUserId] = useState(null)
+   const [userId, setUserId] = useState<string | null>(null)
   const [form, setForm] = useState({
     nom_clinique: '',
     medecin: '',
@@ -52,7 +53,7 @@ export default function Parametres() {
     email_contact: '',
   })
 
-  async function fetchParams(uid) {
+  async function fetchParams(uid: string) {
     try {
       const { data, error } = await supabase
         .from('parametres_clinique')
@@ -85,7 +86,7 @@ export default function Parametres() {
       if (user) {
         setUserId(user.id)
         fetchParams(user.id)
-        setForm(f => ({ ...f, email_contact: user.email }))
+         setForm(f => ({ ...f, email_contact: user.email || '' }))
       }
     })
   }, [])

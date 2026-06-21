@@ -9,13 +9,18 @@ import { createClient } from '@supabase/supabase-js'
 
 // Vite injects `import.meta.env` variables at build / dev-server time.
 // The `VITE_` prefix is required for Vite to expose them to the browser.
+// @ts-ignore - Vite provides these at build time
 const rawUrl  = import.meta.env.VITE_SUPABASE_URL
+// @ts-ignore - Vite provides these at build time
 const rawKey  = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 // Detect environment for diagnostics
-const isDev  = import.meta.env?.DEV    ?? false
-const isProd = import.meta.env?.PROD   ?? false
-const mode   = import.meta.env?.MODE   ?? 'unknown'
+// @ts-ignore - Vite provides these at build time
+const isDev  = import.meta.env.DEV    ?? false
+// @ts-ignore - Vite provides these at build time
+const isProd = import.meta.env.PROD   ?? false
+// @ts-ignore - Vite provides these at build time
+const mode   = import.meta.env.MODE   ?? 'unknown'
 
 console.log('[supabaseClient] Environment diagnostics:', {
   VITE_SUPABASE_URL:             rawUrl ?? 'UNDEFINED',

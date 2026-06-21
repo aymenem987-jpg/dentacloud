@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabaseClient'
+import type { Session } from '@supabase/supabase-js'
 import Dashboard from './pages/Dashboard'
 import Patients from './pages/Patients'
 import Agenda from './pages/Agenda'
@@ -54,7 +55,12 @@ function BottomNav() {
   )
 }
 
-function Sidebar({ sidebarOpen, setSidebarOpen, userEmail, handleLogout }) {
+function Sidebar({ sidebarOpen, setSidebarOpen, userEmail, handleLogout }: {
+  sidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  userEmail: string;
+  handleLogout: () => Promise<void>
+}) {
   const initiales = userEmail.substring(0, 2).toUpperCase()
   return (
     <div style={{
@@ -143,11 +149,60 @@ function Sidebar({ sidebarOpen, setSidebarOpen, userEmail, handleLogout }) {
   )
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Blocage d'accès quand l'essai gratuit est expiré
+// ═══════════════════════════════════════════════════════════════════════════
+function EcranExpire({ handleLogout }: { handleLogout: () => Promise<void> }) {
+  function souscrire() {
+    const msg = "Bonjour DentaCloud ! Mon essai gratuit est expire, je voudrais souscrire a un plan."
+    window.open(`https://wa.me/213775538234?text=${encodeURIComponent(msg)}`, '_blank')
+  }
+
+  return (
+    <div style={{
+      minHeight: '100vh', background: '#0D1F1C', color: '#F0F9F7',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontFamily: "'DM Sans', sans-serif", padding: '1rem',
+    }}>
+      <div style={{
+        background: 'rgba(19,36,32,0.95)', border: '1px solid rgba(229,115,115,0.3)',
+        borderRadius: '20px', padding: '3rem 2rem', maxWidth: '480px', width: '100%',
+        textAlign: 'center', boxShadow: '0 40px 100px rgba(0,0,0,0.5)',
+      }}>
+        <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>⏰</div>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.8rem', color: '#E57373' }}>
+          Votre essai gratuit est expiré
+        </h2>
+        <p style={{ color: '#8BBDB5', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '2rem' }}>
+          Souscrivez à un plan DentaCloud pour continuer à accéder à votre dashboard, vos patients, et toutes vos données.
+        </p>
+        <button onClick={souscrire} style={{
+          width: '100%', background: 'linear-gradient(135deg, #0A7C6E, #12A08F)',
+          color: '#fff', border: 'none', borderRadius: '10px', padding: '1rem',
+          fontFamily: "'DM Sans', sans-serif", fontSize: '1rem', fontWeight: 600,
+          cursor: 'pointer', marginBottom: '1rem',
+        }}>
+          🚀 Souscrire via WhatsApp
+        </button>
+        <button onClick={handleLogout} style={{
+          width: '100%', background: 'transparent', color: '#8BBDB5',
+          border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '0.8rem',
+          fontFamily: "'DM Sans', sans-serif", fontSize: '0.875rem', cursor: 'pointer',
+        }}>
+          🚪 Se déconnecter
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
-  const [session, setSession] = useState(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768)
+  const [abonnementExpire, setAbonnementExpire] = useState(false)
+  const [checkingAbonnement, setCheckingAbonnement] = useState(true)
 
   useEffect(() => {
     const updateLayout = () => {
@@ -163,7 +218,6 @@ export default function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
 
-    // Handle auto-login via tokens from landing page
     const accessToken = params.get('access_token')
     const refreshToken = params.get('refresh_token')
 
@@ -179,7 +233,6 @@ export default function App() {
       return
     }
 
-    // Handle ?nouveau=1 — force logout
     if (params.get('nouveau') === '1') {
       supabase.auth.signOut().then(() => {
         window.history.replaceState({}, '', window.location.pathname)
@@ -200,6 +253,38 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Vérifier le statut d'abonnement à chaque connexion
+  useEffect(() => {
+    if (!session?.user) {
+      setCheckingAbonnement(false)
+      return
+    }
+
+    setCheckingAbonnement(true)
+    supabase
+      .from('cliniques')
+      .select('date_expiration, abonnement_statut, plan_actif')
+      .eq('user_id', session.user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          const statutActif = data.abonnement_statut === 'actif'
+          if (statutActif) {
+            setAbonnementExpire(false)
+          } else if (data.date_expiration) {
+            const expire = new Date(data.date_expiration).getTime() < new Date().getTime()
+            setAbonnementExpire(expire)
+          } else {
+            setAbonnementExpire(false)
+          }
+        } else {
+          // Aucune entrée trouvée : pas de blocage par défaut
+          setAbonnementExpire(false)
+        }
+        setCheckingAbonnement(false)
+      })
+  }, [session])
+
   async function handleLogout() {
     await supabase.auth.signOut()
     setSession(null)
@@ -209,7 +294,7 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
   , [setSession])
 
-  if (loading) return (
+  if (loading || checkingAbonnement) return (
     <div style={{
       minHeight: '100vh', background: '#0D1F1C',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -223,7 +308,12 @@ export default function App() {
     <Login onLogin={handleLoginRefetch} />
   )
 
-  const userEmail = session.user.email
+  // Bloquer l'accès si l'abonnement est expiré
+  if (abonnementExpire) return (
+    <EcranExpire handleLogout={handleLogout} />
+  )
+
+  const userEmail = session.user?.email ?? ''
 
   return (
     <BrowserRouter>
