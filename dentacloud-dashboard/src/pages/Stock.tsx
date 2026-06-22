@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import type { CSSProperties } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -6,14 +7,38 @@ import { supabase } from '../lib/supabaseClient'
 // Do NOT call createClient() in any other file.
 // ═══════════════════════════════════════════════════════════════════════════
 
-const card = {
+interface Article {
+  id: string
+  nom: string
+  categorie: string
+  quantite: number
+  quantite_min: number
+  unite: string
+  prix_unitaire: number | null
+  fournisseur: string | null
+  user_id: string
+  created_at?: string
+  updated_at?: string
+}
+
+interface FormState {
+  nom: string
+  categorie: string
+  quantite: number
+  quantite_min: number
+  unite: string
+  prix_unitaire: string
+  fournisseur: string
+}
+
+const card: CSSProperties = {
   background: 'rgba(19,36,32,0.8)',
   border: '1px solid rgba(18,160,143,0.15)',
   borderRadius: '12px',
   padding: '1.2rem',
 }
 
-const inputStyle = {
+const inputStyle: CSSProperties = {
   background: 'rgba(255,255,255,0.04)',
   border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: '8px',
@@ -28,32 +53,34 @@ const inputStyle = {
 
 const categories = ['Consommables', 'Instruments', 'Médicaments', 'Matériaux', 'Protection', 'Autres']
 
-const articlesDefaut = [
-  { nom: 'Gants latex (boîte)', categorie: 'Protection', quantite: 10, quantite_min: 3, unite: 'boîte', prix_unitaire: 450 },
-  { nom: 'Masques chirurgicaux (boîte)', categorie: 'Protection', quantite: 8, quantite_min: 3, unite: 'boîte', prix_unitaire: 350 },
-  { nom: 'Anesthésique lidocaïne', categorie: 'Médicaments', quantite: 5, quantite_min: 10, unite: 'boîte', prix_unitaire: 1200 },
-  { nom: 'Composite dentaire', categorie: 'Matériaux', quantite: 4, quantite_min: 5, unite: 'seringue', prix_unitaire: 2500 },
-  { nom: 'Fraises dentaires', categorie: 'Instruments', quantite: 20, quantite_min: 10, unite: 'unité', prix_unitaire: 800 },
+const articlesDefaut: Omit<Article, 'id' | 'user_id'>[] = [
+  { nom: 'Gants latex (boîte)', categorie: 'Protection', quantite: 10, quantite_min: 3, unite: 'boîte', prix_unitaire: 450, fournisseur: null },
+  { nom: 'Masques chirurgicaux (boîte)', categorie: 'Protection', quantite: 8, quantite_min: 3, unite: 'boîte', prix_unitaire: 350, fournisseur: null },
+  { nom: 'Anesthésique lidocaïne', categorie: 'Médicaments', quantite: 5, quantite_min: 10, unite: 'boîte', prix_unitaire: 1200, fournisseur: null },
+  { nom: 'Composite dentaire', categorie: 'Matériaux', quantite: 4, quantite_min: 5, unite: 'seringue', prix_unitaire: 2500, fournisseur: null },
+  { nom: 'Fraises dentaires', categorie: 'Instruments', quantite: 20, quantite_min: 10, unite: 'unité', prix_unitaire: 800, fournisseur: null },
 ]
 
+const initialForm: FormState = {
+  nom: '', categorie: 'Consommables', quantite: 0,
+  quantite_min: 5, unite: 'unité', prix_unitaire: '', fournisseur: ''
+}
+
 export default function Stock() {
-  const [articles, setArticles] = useState([])
+  const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
-  const [userId, setUserId] = useState(null)
+  const [userId, setUserId] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
-  const [editItem, setEditItem] = useState(null)
+  const [editItem, setEditItem] = useState<Article | null>(null)
   const [search, setSearch] = useState('')
   const [filterCat, setFilterCat] = useState('')
-  const [form, setForm] = useState({
-    nom: '', categorie: 'Consommables', quantite: 0,
-    quantite_min: 5, unite: 'unité', prix_unitaire: '', fournisseur: ''
-  })
+  const [form, setForm] = useState<FormState>(initialForm)
 
-  async function fetchStock(uid) {
+  async function fetchStock(uid: string) {
     try {
       const { data, error } = await supabase.from('stock').select('*').eq('user_id', uid).order('nom')
-      if (error) { console.error('Error fetching stock:', error) }
-      setArticles(data || [])
+      if (error) console.error('Error fetching stock:', error)
+      setArticles((data as Article[]) || [])
     } catch (err) {
       console.error('Unexpected error fetching stock:', err)
       setArticles([])
@@ -71,63 +98,82 @@ export default function Stock() {
   }, [])
 
   async function handleSave() {
-    if (!form.nom) return
+    if (!form.nom || !userId) return
     try {
+      const payload = {
+        ...form,
+        prix_unitaire: form.prix_unitaire ? parseFloat(form.prix_unitaire) : null,
+        fournisseur: form.fournisseur || null,
+      }
       if (editItem) {
-        const { error } = await supabase.from('stock').update({ ...form, updated_at: new Date().toISOString() }).eq('id', editItem.id)
+        const { error } = await supabase
+          .from('stock')
+          .update({ ...payload, updated_at: new Date().toISOString() })
+          .eq('id', editItem.id)
         if (error) { console.error('Error updating stock item:', error); alert('Erreur lors de la modification.'); return }
       } else {
-        const { error } = await supabase.from('stock').insert([{ ...form, user_id: userId }])
-        if (error) { console.error('Error adding stock item:', error); alert('Erreur lors de l\'ajout.'); return }
+        const { error } = await supabase.from('stock').insert([{ ...payload, user_id: userId }])
+        if (error) { console.error('Error adding stock item:', error); alert("Erreur lors de l'ajout."); return }
       }
       setShowForm(false)
       setEditItem(null)
       resetForm()
-      fetchStock(userId)
+      await fetchStock(userId)
     } catch (err) {
       console.error('Unexpected error saving stock item:', err)
       alert('Erreur de connexion.')
     }
   }
 
-  async function handleDelete(id) {
-    if (!confirm('Supprimer cet article ?')) return
+  async function handleDelete(id: string) {
+    if (!window.confirm('Supprimer cet article ?') || !userId) return
     try {
       const { error } = await supabase.from('stock').delete().eq('id', id)
       if (error) { console.error('Error deleting stock item:', error); alert('Erreur lors de la suppression.'); return }
-      fetchStock(userId)
-    } catch (err) { console.error('Unexpected error deleting stock item:', err) }
+      await fetchStock(userId)
+    } catch (err) {
+      console.error('Unexpected error deleting stock item:', err)
+    }
   }
 
-  async function handleQuantite(id, delta) {
+  async function handleQuantite(id: string, delta: number) {
+    if (!userId) return
     const item = articles.find(a => a.id === id)
     if (!item) return
     const newQty = Math.max(0, item.quantite + delta)
     try {
       const { error } = await supabase.from('stock').update({ quantite: newQty }).eq('id', id)
       if (error) { console.error('Error updating quantity:', error); alert('Erreur lors de la mise à jour de la quantité.'); return }
-      fetchStock(userId)
-    } catch (err) { console.error('Unexpected error updating quantity:', err) }
+      await fetchStock(userId)
+    } catch (err) {
+      console.error('Unexpected error updating quantity:', err)
+    }
   }
 
   async function loadArticlesDefaut() {
+    if (!userId) return
     const inserts = articlesDefaut.map(a => ({ ...a, user_id: userId }))
     try {
       await supabase.from('stock').insert(inserts)
-      fetchStock(userId)
-    } catch (err) { console.error('Unexpected error loading default articles:', err) }
+      await fetchStock(userId)
+    } catch (err) {
+      console.error('Unexpected error loading default articles:', err)
+    }
   }
 
   function resetForm() {
-    setForm({ nom: '', categorie: 'Consommables', quantite: 0, quantite_min: 5, unite: 'unité', prix_unitaire: '', fournisseur: '' })
+    setForm(initialForm)
   }
 
-  function openEdit(item) {
+  function openEdit(item: Article) {
     setEditItem(item)
     setForm({
-      nom: item.nom, categorie: item.categorie || 'Consommables',
-      quantite: item.quantite, quantite_min: item.quantite_min,
-      unite: item.unite, prix_unitaire: item.prix_unitaire || '',
+      nom: item.nom,
+      categorie: item.categorie || 'Consommables',
+      quantite: item.quantite,
+      quantite_min: item.quantite_min,
+      unite: item.unite,
+      prix_unitaire: item.prix_unitaire != null ? String(item.prix_unitaire) : '',
       fournisseur: item.fournisseur || ''
     })
     setShowForm(true)
@@ -238,8 +284,8 @@ export default function Stock() {
                 const critique = a.quantite <= a.quantite_min
                 return (
                   <div key={a.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 1fr 1fr', gap: '0.5rem', padding: '0.8rem 1.2rem', borderTop: '1px solid rgba(18,160,143,0.05)', alignItems: 'center', transition: 'background 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(18,160,143,0.03)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'rgba(18,160,143,0.03)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'transparent'}>
                     <div>
                       <div style={{ fontSize: '0.85rem', fontWeight: 500 }}>{a.nom}</div>
                       {a.fournisseur && <div style={{ fontSize: '0.68rem', color: '#8BBDB5' }}>{a.fournisseur}</div>}
@@ -279,7 +325,14 @@ export default function Stock() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div style={{ gridColumn: '1/-1' }}>
                 <label style={{ fontSize: '0.72rem', color: '#8BBDB5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Nom de l'article *</label>
-                <input style={inputStyle} value={form.nom} onChange={e => setForm({ ...form, nom: e.target.value })} placeholder="Ex: Gants latex" onFocus={e => e.target.style.borderColor = '#12A08F'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                <input
+                  style={inputStyle}
+                  value={form.nom}
+                  onChange={e => setForm({ ...form, nom: e.target.value })}
+                  placeholder="Ex: Gants latex"
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#12A08F'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
               </div>
               <div>
                 <label style={{ fontSize: '0.72rem', color: '#8BBDB5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Catégorie</label>
@@ -289,23 +342,62 @@ export default function Stock() {
               </div>
               <div>
                 <label style={{ fontSize: '0.72rem', color: '#8BBDB5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Unité</label>
-                <input style={inputStyle} value={form.unite} onChange={e => setForm({ ...form, unite: e.target.value })} placeholder="boîte, unité, seringue..." onFocus={e => e.target.style.borderColor = '#12A08F'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                <input
+                  style={inputStyle}
+                  value={form.unite}
+                  onChange={e => setForm({ ...form, unite: e.target.value })}
+                  placeholder="boîte, unité, seringue..."
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#12A08F'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
               </div>
               <div>
                 <label style={{ fontSize: '0.72rem', color: '#8BBDB5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Quantité actuelle</label>
-                <input style={inputStyle} type="number" min="0" value={form.quantite} onChange={e => setForm({ ...form, quantite: parseInt(e.target.value) || 0 })} onFocus={e => e.target.style.borderColor = '#12A08F'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                <input
+                  style={inputStyle}
+                  type="number"
+                  min={0}
+                  value={form.quantite}
+                  onChange={e => setForm({ ...form, quantite: parseInt(e.target.value) || 0 })}
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#12A08F'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
               </div>
               <div>
                 <label style={{ fontSize: '0.72rem', color: '#8BBDB5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Alerte stock min</label>
-                <input style={inputStyle} type="number" min="0" value={form.quantite_min} onChange={e => setForm({ ...form, quantite_min: parseInt(e.target.value) || 0 })} onFocus={e => e.target.style.borderColor = '#12A08F'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                <input
+                  style={inputStyle}
+                  type="number"
+                  min={0}
+                  value={form.quantite_min}
+                  onChange={e => setForm({ ...form, quantite_min: parseInt(e.target.value) || 0 })}
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#12A08F'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
               </div>
               <div>
                 <label style={{ fontSize: '0.72rem', color: '#8BBDB5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Prix unitaire (DZD)</label>
-                <input style={inputStyle} type="number" min="0" value={form.prix_unitaire} onChange={e => setForm({ ...form, prix_unitaire: e.target.value })} placeholder="0" onFocus={e => e.target.style.borderColor = '#12A08F'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                <input
+                  style={inputStyle}
+                  type="number"
+                  min={0}
+                  value={form.prix_unitaire}
+                  onChange={e => setForm({ ...form, prix_unitaire: e.target.value })}
+                  placeholder="0"
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#12A08F'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
               </div>
               <div style={{ gridColumn: '1/-1' }}>
                 <label style={{ fontSize: '0.72rem', color: '#8BBDB5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Fournisseur</label>
-                <input style={inputStyle} value={form.fournisseur} onChange={e => setForm({ ...form, fournisseur: e.target.value })} placeholder="Nom du fournisseur" onFocus={e => e.target.style.borderColor = '#12A08F'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                <input
+                  style={inputStyle}
+                  value={form.fournisseur}
+                  onChange={e => setForm({ ...form, fournisseur: e.target.value })}
+                  placeholder="Nom du fournisseur"
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = '#12A08F'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
               </div>
             </div>
             <div style={{ display: 'flex', gap: '0.8rem', marginTop: '1.5rem' }}>
