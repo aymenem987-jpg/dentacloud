@@ -248,7 +248,7 @@ export default function Agenda() {
                   termine: { bg: 'rgba(76,175,80,0.2)', color: '#4CAF50' }
                 }
                 const statutKey = rdv.statut ?? 'en_attente'
-                const statut = statutColors[statutKey] ?? statutColors.en_attente
+                const statut: { bg: string; color: string } = statutColors[statutKey] || { bg: 'rgba(200,151,58,0.2)', color: '#C8973A' }
                 const date = new Date(rdv.date_heure)
                 const dateStr = date.toLocaleString('fr-FR', {
                   year: 'numeric', month: 'short', day: 'numeric',
