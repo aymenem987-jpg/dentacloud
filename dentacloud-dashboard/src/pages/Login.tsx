@@ -21,6 +21,39 @@ const inputStyle: CSSProperties = {
   WebkitAppearance: 'none',
 }
 
+// Lie le user_id Auth a la ligne correspondante dans la table cliniques.
+// Si aucune ligne n'existe pour cet email, on en cree une avec 30 jours d'essai.
+async function lierClinique(userId: string, email: string) {
+  const { data: existing } = await supabase
+    .from('cliniques')
+    .select('id, user_id')
+    .eq('email', email)
+    .maybeSingle()
+
+  if (existing) {
+    if (!existing.user_id) {
+      await supabase
+        .from('cliniques')
+        .update({ user_id: userId })
+        .eq('email', email)
+    }
+  } else {
+    await supabase
+      .from('cliniques')
+      .insert([{
+        email,
+        user_id: userId,
+        nom: '',
+        medecin: '',
+        plan: 'starter',
+        date_inscription: new Date().toISOString(),
+        date_expiration: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        abonnement_statut: 'essai',
+        plan_actif: true,
+      }])
+  }
+}
+
 export default function Login({ onLogin }: { onLogin: () => void }) {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
@@ -36,42 +69,63 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
     const refresh_token = params.get('refresh_token')
 
     if (access_token && refresh_token) {
-      supabase.auth.setSession({ access_token, refresh_token }).then(({ data }) => {
-        if (data.session) onLogin()
+      supabase.auth.setSession({ access_token, refresh_token }).then(async ({ data }) => {
+        if (data.session?.user) {
+          await lierClinique(data.session.user.id, data.session.user.email ?? '')
+          onLogin()
+        }
       })
     } else {
-      supabase.auth.getSession().then(({ data }) => {
-        if (data.session) onLogin()
+      supabase.auth.getSession().then(async ({ data }) => {
+        if (data.session?.user) {
+          await lierClinique(data.session.user.id, data.session.user.email ?? '')
+          onLogin()
+        }
       })
     }
   }, [onLogin])
 
-   async function handleLogin(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError('Email ou mot de passe incorrect')
-    else onLogin()
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      setError('Email ou mot de passe incorrect')
+      setLoading(false)
+      return
+    }
+    if (data.session?.user) {
+      await lierClinique(data.session.user.id, data.session.user.email ?? '')
+    }
+    onLogin()
     setLoading(false)
   }
 
-   async function handleRegister(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email, password,
       options: { data: { nom_clinique: nom } }
     })
-    if (error) setError(error.message)
-    else { setSuccess('Compte créé ! Connectez-vous maintenant.'); setMode('login') }
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+    if (data.session?.user) {
+      await lierClinique(data.session.user.id, data.session.user.email ?? '')
+    }
+    setSuccess('Compte créé ! Connectez-vous maintenant.')
+    setMode('login')
     setLoading(false)
   }
 
   return (
     <div style={{
-      minHeight: '100dvh',  /* modern browsers; 100vh used as comment fallback below */
+      minHeight: '100dvh',
       background: '#0D1F1C',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontFamily: "'DM Sans', sans-serif",
