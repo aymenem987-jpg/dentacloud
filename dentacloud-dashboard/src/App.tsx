@@ -340,11 +340,13 @@ export default function App() {
           width: isMobile ? '100%' : 'auto',
         }}>
           <div style={{
-            padding: '0.9rem 1.2rem',
             borderBottom: '1px solid rgba(18,160,143,0.15)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             background: 'rgba(13,31,28,0.95)', backdropFilter: 'blur(10px)',
             position: 'sticky', top: 0, zIndex: 40,
+          }}>
+          <div className="dc-page-container" style={{
+            padding: '0.9rem var(--dc-content-padding)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <div>
               {isMobile
@@ -382,6 +384,7 @@ export default function App() {
                   }}>● En ligne</div>
               }
             </div>
+          </div>
           </div>
 
           <div className="dc-page-container" style={{ padding: 'var(--dc-content-padding)' }}>
