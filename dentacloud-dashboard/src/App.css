@@ -44,9 +44,18 @@ html {
   :root {
     --dc-font-base: 19px;
     --dc-sidebar-width: 290px;
-    --dc-content-max-width: 1900px;
+    --dc-content-max-width: 2400px;
     --dc-content-padding: 3.5rem;
     --dc-gap: 1.75rem;
+  }
+}
+
+@media (min-width: 2600px) {
+  :root {
+    --dc-font-base: 21px;
+    --dc-sidebar-width: 310px;
+    --dc-content-max-width: 3000px;
+    --dc-content-padding: 4rem;
   }
 }
 
