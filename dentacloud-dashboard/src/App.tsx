@@ -9,10 +9,15 @@ import Facturation from './pages/Facturation'
 import Login from './pages/Login'
 import Parametres from './pages/Parametres'
 import Stock from './pages/Stock'
+import './App.css'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Supabase client is imported from src/lib/supabaseClient.js — this is the
 // single source of truth.  Do NOT call createClient() in any other file.
+//
+// RESPONSIVE: ce fichier utilise les variables CSS définies dans App.css
+// (--dc-sidebar-width, --dc-content-padding, etc.) au lieu de pixels fixes,
+// pour que le dashboard grossisse proportionnellement sur grands écrans.
 // ═══════════════════════════════════════════════════════════════════════════
 
 const menuItems = [
@@ -48,7 +53,7 @@ function BottomNav() {
             borderTop: isActive ? '2px solid #12A08F' : '2px solid transparent',
           })}>
           <span style={{ fontSize: '1.4rem' }}>{item.icon}</span>
-          <span style={{ fontSize: '0.6rem', fontWeight: 500 }}>{item.label}</span>
+          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>{item.label}</span>
         </NavLink>
       ))}
     </div>
@@ -64,7 +69,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, userEmail, handleLogout }: {
   const initiales = userEmail.substring(0, 2).toUpperCase()
   return (
     <div style={{
-      width: sidebarOpen ? '220px' : '64px',
+      width: sidebarOpen ? 'var(--dc-sidebar-width)' : 'var(--dc-sidebar-collapsed)',
       background: 'rgba(19,36,32,0.98)',
       borderRight: '1px solid rgba(18,160,143,0.15)',
       transition: 'width 0.3s ease',
@@ -77,69 +82,69 @@ function Sidebar({ sidebarOpen, setSidebarOpen, userEmail, handleLogout }: {
         borderBottom: '1px solid rgba(18,160,143,0.15)',
         display: 'flex', alignItems: 'center',
         justifyContent: sidebarOpen ? 'space-between' : 'center',
-        minHeight: '60px',
+        minHeight: '64px',
       }}>
         {sidebarOpen && (
-          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.4rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
+          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.5rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
             Denta<span style={{ color: '#12A08F' }}>Cloud</span>
           </span>
         )}
         <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{
           background: 'rgba(18,160,143,0.1)', border: 'none', color: '#8BBDB5',
-          width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer',
-          fontSize: '0.8rem', display: 'flex', alignItems: 'center',
+          width: '34px', height: '34px', borderRadius: '8px', cursor: 'pointer',
+          fontSize: '0.85rem', display: 'flex', alignItems: 'center',
           justifyContent: 'center', flexShrink: 0,
         }}>{sidebarOpen ? '◀' : '▶'}</button>
       </div>
 
-      <nav style={{ padding: '0.8rem 0', flex: 1, overflowY: 'auto' }}>
+      <nav style={{ padding: '0.9rem 0', flex: 1, overflowY: 'auto' }}>
         {menuItems.map(item => (
           <NavLink key={item.path} to={item.path} end={item.path === '/'}
             style={({ isActive }) => ({
               display: 'flex', alignItems: 'center',
-              gap: sidebarOpen ? '0.8rem' : '0',
+              gap: sidebarOpen ? '0.9rem' : '0',
               justifyContent: sidebarOpen ? 'flex-start' : 'center',
-              padding: '0.75rem 1rem',
+              padding: '0.85rem 1.1rem',
               textDecoration: 'none',
               color: isActive ? '#12A08F' : '#8BBDB5',
               background: isActive ? 'rgba(18,160,143,0.1)' : 'transparent',
               borderLeft: isActive ? '3px solid #12A08F' : '3px solid transparent',
-              transition: 'all 0.2s', fontSize: '0.875rem',
+              transition: 'all 0.2s', fontSize: '0.95rem',
               fontWeight: 500, whiteSpace: 'nowrap',
             })}>
-            <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{item.icon}</span>
+            <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{item.icon}</span>
             {sidebarOpen && item.label}
           </NavLink>
         ))}
       </nav>
 
-      <div style={{ padding: '1rem', borderTop: '1px solid rgba(18,160,143,0.15)' }}>
+      <div style={{ padding: '1.1rem', borderTop: '1px solid rgba(18,160,143,0.15)' }}>
         <div style={{
           display: 'flex', alignItems: 'center',
           gap: '0.6rem',
           justifyContent: sidebarOpen ? 'flex-start' : 'center',
-          marginBottom: sidebarOpen ? '0.8rem' : '0',
+          marginBottom: sidebarOpen ? '0.9rem' : '0',
         }}>
           <div style={{
-            width: '32px', height: '32px', borderRadius: '50%',
+            width: '36px', height: '36px', borderRadius: '50%',
             background: 'rgba(18,160,143,0.2)',
             border: '1px solid rgba(18,160,143,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '0.75rem', fontWeight: 600, color: '#12A08F', flexShrink: 0,
+            fontSize: '0.8rem', fontWeight: 600, color: '#12A08F', flexShrink: 0,
           }}>{initiales}</div>
           {sidebarOpen && (
-            <div style={{ fontSize: '0.72rem', color: '#8BBDB5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: '0.8rem', color: '#8BBDB5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {userEmail}
             </div>
           )}
         </div>
         {sidebarOpen && (
           <button onClick={handleLogout} style={{
-            width: '100%', padding: '0.5rem',
+            width: '100%', padding: '0.6rem',
             background: 'rgba(229,115,115,0.1)',
             border: '1px solid rgba(229,115,115,0.2)',
             color: '#E57373', borderRadius: '8px', cursor: 'pointer',
-            fontSize: '0.75rem', fontFamily: "'DM Sans', sans-serif",
+            fontSize: '0.8rem', fontFamily: "'DM Sans', sans-serif",
           }}>
             🚪 Déconnexion
           </button>
@@ -149,9 +154,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen, userEmail, handleLogout }: {
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Blocage d'accès quand l'essai gratuit est expiré
-// ═══════════════════════════════════════════════════════════════════════════
 function EcranExpire({ handleLogout }: { handleLogout: () => Promise<void> }) {
   function souscrire() {
     const msg = "Bonjour DentaCloud ! Mon essai gratuit est expire, je voudrais souscrire a un plan."
@@ -162,32 +164,33 @@ function EcranExpire({ handleLogout }: { handleLogout: () => Promise<void> }) {
     <div style={{
       minHeight: '100vh', background: '#0D1F1C', color: '#F0F9F7',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: "'DM Sans', sans-serif", padding: '1rem',
+      fontFamily: "'DM Sans', sans-serif", padding: '1.5rem',
     }}>
       <div style={{
         background: 'rgba(19,36,32,0.95)', border: '1px solid rgba(229,115,115,0.3)',
-        borderRadius: '20px', padding: '3rem 2rem', maxWidth: '480px', width: '100%',
+        borderRadius: '20px', padding: 'clamp(2rem, 4vw, 3.5rem)',
+        maxWidth: 'min(560px, 90vw)', width: '100%',
         textAlign: 'center', boxShadow: '0 40px 100px rgba(0,0,0,0.5)',
       }}>
-        <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>⏰</div>
-        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.8rem', color: '#E57373' }}>
+        <div style={{ fontSize: 'clamp(3rem, 6vw, 4rem)', marginBottom: '1rem' }}>⏰</div>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.6rem, 3vw, 2.1rem)', fontWeight: 700, marginBottom: '0.8rem', color: '#E57373' }}>
           Votre essai gratuit est expiré
         </h2>
-        <p style={{ color: '#8BBDB5', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '2rem' }}>
+        <p style={{ color: '#8BBDB5', fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)', lineHeight: 1.6, marginBottom: '2rem' }}>
           Souscrivez à un plan DentaCloud pour continuer à accéder à votre dashboard, vos patients, et toutes vos données.
         </p>
         <button onClick={souscrire} style={{
           width: '100%', background: 'linear-gradient(135deg, #0A7C6E, #12A08F)',
-          color: '#fff', border: 'none', borderRadius: '10px', padding: '1rem',
-          fontFamily: "'DM Sans', sans-serif", fontSize: '1rem', fontWeight: 600,
+          color: '#fff', border: 'none', borderRadius: '10px', padding: '1.1rem',
+          fontFamily: "'DM Sans', sans-serif", fontSize: 'clamp(1rem, 1.3vw, 1.15rem)', fontWeight: 600,
           cursor: 'pointer', marginBottom: '1rem',
         }}>
           🚀 Souscrire via WhatsApp
         </button>
         <button onClick={handleLogout} style={{
           width: '100%', background: 'transparent', color: '#8BBDB5',
-          border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '0.8rem',
-          fontFamily: "'DM Sans', sans-serif", fontSize: '0.875rem', cursor: 'pointer',
+          border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '0.9rem',
+          fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', cursor: 'pointer',
         }}>
           🚪 Se déconnecter
         </button>
@@ -253,7 +256,6 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Vérifier le statut d'abonnement à chaque connexion
   useEffect(() => {
     if (!session?.user) {
       setCheckingAbonnement(false)
@@ -278,7 +280,6 @@ export default function App() {
             setAbonnementExpire(false)
           }
         } else {
-          // Aucune entrée trouvée : pas de blocage par défaut
           setAbonnementExpire(false)
         }
         setCheckingAbonnement(false)
@@ -298,7 +299,7 @@ export default function App() {
     <div style={{
       minHeight: '100vh', background: '#0D1F1C',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: "'Cormorant Garamond', serif", fontSize: '1.5rem', color: '#12A08F',
+      fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.3rem, 2vw, 1.6rem)', color: '#12A08F',
     }}>
       Denta<span style={{ color: '#F0F9F7' }}>Cloud</span>
     </div>
@@ -308,7 +309,6 @@ export default function App() {
     <Login onLogin={handleLoginRefetch} />
   )
 
-  // Bloquer l'accès si l'abonnement est expiré
   if (abonnementExpire) return (
     <EcranExpire handleLogout={handleLogout} />
   )
@@ -322,7 +322,6 @@ export default function App() {
         background: '#0D1F1C', color: '#F0F9F7',
         fontFamily: "'DM Sans', sans-serif",
       }}>
-        {/* Desktop Sidebar */}
         {!isMobile && (
           <Sidebar
             sidebarOpen={sidebarOpen}
@@ -332,18 +331,16 @@ export default function App() {
           />
         )}
 
-        {/* Main content */}
         <div style={{
           flex: 1,
-          marginLeft: isMobile ? 0 : (sidebarOpen ? '220px' : '64px'),
+          marginLeft: isMobile ? 0 : (sidebarOpen ? 'var(--dc-sidebar-width)' : 'var(--dc-sidebar-collapsed)'),
           transition: 'margin-left 0.3s ease',
-          paddingBottom: isMobile ? '70px' : 0,
+          paddingBottom: isMobile ? '74px' : 0,
           minWidth: 0,
           width: isMobile ? '100%' : 'auto',
         }}>
-          {/* Topbar */}
           <div style={{
-            padding: '0.8rem 1rem',
+            padding: '0.9rem 1.2rem',
             borderBottom: '1px solid rgba(18,160,143,0.15)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             background: 'rgba(13,31,28,0.95)', backdropFilter: 'blur(10px)',
@@ -351,21 +348,21 @@ export default function App() {
           }}>
             <div>
               {isMobile
-                ? <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.2rem', fontWeight: 700 }}>
+                ? <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.25rem', fontWeight: 700 }}>
                     Denta<span style={{ color: '#12A08F' }}>Cloud</span>
                   </span>
-                : <span style={{ color: '#8BBDB5', fontSize: '0.875rem' }}>
+                : <span style={{ color: '#8BBDB5', fontSize: '0.95rem' }}>
                     {new Date().toLocaleDateString('fr-DZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
               }
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
               <div style={{ position: 'relative' }}>
-                <span style={{ fontSize: '1.2rem', cursor: 'pointer' }}>🔔</span>
+                <span style={{ fontSize: '1.3rem', cursor: 'pointer' }}>🔔</span>
                 <span style={{
                   position: 'absolute', top: '-4px', right: '-4px',
-                  background: '#C8973A', color: '#fff', fontSize: '0.55rem',
-                  width: '14px', height: '14px', borderRadius: '50%',
+                  background: '#C8973A', color: '#fff', fontSize: '0.6rem',
+                  width: '15px', height: '15px', borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700,
                 }}>3</span>
               </div>
@@ -374,21 +371,20 @@ export default function App() {
                     background: 'rgba(229,115,115,0.1)',
                     border: '1px solid rgba(229,115,115,0.2)',
                     color: '#E57373', borderRadius: '8px',
-                    padding: '0.3rem 0.7rem', fontSize: '0.72rem',
+                    padding: '0.35rem 0.75rem', fontSize: '0.8rem',
                     cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
                   }}>🚪</button>
                 : <div style={{
                     background: 'rgba(18,160,143,0.1)',
                     border: '1px solid rgba(18,160,143,0.2)',
-                    borderRadius: '100px', padding: '0.3rem 0.8rem',
-                    fontSize: '0.75rem', color: '#12A08F',
+                    borderRadius: '100px', padding: '0.35rem 0.9rem',
+                    fontSize: '0.85rem', color: '#12A08F',
                   }}>● En ligne</div>
               }
             </div>
           </div>
 
-          {/* Page content */}
-          <div style={{ padding: isMobile ? '1rem' : '1.5rem 2rem' }}>
+          <div className="dc-page-container" style={{ padding: 'var(--dc-content-padding)' }}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/agenda" element={<Agenda />} />
@@ -401,7 +397,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Mobile Bottom Nav */}
         {isMobile && <BottomNav />}
       </div>
     </BrowserRouter>

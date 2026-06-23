@@ -1,42 +1,66 @@
-#root {
-  max-width: 1280px;
+/* ═══════════════════════════════════════════════════════════════════════
+   DentaCloud Dashboard — Système responsive global
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --dc-font-base: 15px;
+  --dc-sidebar-width: 220px;
+  --dc-sidebar-collapsed: 64px;
+  --dc-content-max-width: 1600px;
+  --dc-content-padding: 1.5rem;
+  --dc-gap: 1rem;
+}
+
+html {
+  font-size: var(--dc-font-base);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --dc-font-base: 16px;
+    --dc-content-padding: 1.75rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --dc-font-base: 17px;
+    --dc-sidebar-width: 250px;
+    --dc-content-padding: 2.25rem;
+    --dc-gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --dc-font-base: 18px;
+    --dc-sidebar-width: 270px;
+    --dc-content-padding: 2.75rem;
+    --dc-gap: 1.5rem;
+  }
+}
+
+@media (min-width: 2000px) {
+  :root {
+    --dc-font-base: 19px;
+    --dc-sidebar-width: 290px;
+    --dc-content-max-width: 1900px;
+    --dc-content-padding: 3.5rem;
+    --dc-gap: 1.75rem;
+  }
+}
+
+.dc-page-container {
+  max-width: var(--dc-content-max-width);
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+* {
+  box-sizing: border-box;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+body {
+  margin: 0;
+  -webkit-text-size-adjust: 100%;
 }
