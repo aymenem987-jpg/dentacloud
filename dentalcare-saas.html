@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DentaCloud — Plateforme SaaS Cliniques Dentaires Algérie</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --teal: #0A7C6E;
@@ -66,6 +67,128 @@ nav {
   transition: background 0.2s, transform 0.15s;
 }
 .btn-nav:hover { background:var(--teal-light); transform:translateY(-1px); }
+
+.btn-nav-outline {
+  background: transparent; color: var(--text-muted);
+  border: 1px solid rgba(255,255,255,0.15); cursor:pointer;
+  padding: 0.6rem 1.5rem; border-radius:6px;
+  font-family:'DM Sans',sans-serif; font-size:0.875rem; font-weight:500;
+  transition: all 0.2s, transform 0.15s;
+}
+.btn-nav-outline:hover { border-color: var(--teal-light); color: var(--text); transform:translateY(-1px); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.active { display: flex; }
+
+.modal-card {
+  background: rgba(19,36,32,0.98);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: rgba(255,255,255,0.08);
+  border: none; color: var(--text-muted);
+  width: 32px; height: 32px; border-radius: 50%;
+  cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.15); }
+
+.modal-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 700;
+  text-align: center; margin-bottom: 0.3rem;
+}
+.modal-logo span { color: var(--teal-light); }
+
+.modal-sub {
+  text-align: center; color: var(--text-muted);
+  font-size: 0.85rem; margin-bottom: 1.8rem;
+}
+
+.modal-input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.modal-input:focus { border-color: var(--teal-light); }
+.modal-input::placeholder { color: rgba(139,189,181,0.4); }
+
+.modal-label {
+  font-size: 0.72rem; font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  display: block; margin-bottom: 0.35rem;
+}
+
+.modal-btn {
+  width: 100%; padding: 0.9rem;
+  background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  color: #fff; border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.modal-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(10,124,110,0.4); }
+.modal-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.modal-error {
+  background: rgba(229,115,115,0.1);
+  border: 1px solid rgba(229,115,115,0.3);
+  border-radius: 8px; padding: 0.7rem;
+  font-size: 0.82rem; color: #E57373;
+  display: none; margin-bottom: 1rem;
+}
+
+.modal-tabs {
+  display: flex; background: rgba(0,0,0,0.2);
+  border-radius: 8px; padding: 4px; margin-bottom: 1.5rem;
+}
+
+.modal-tab {
+  flex: 1; padding: 0.6rem; border: none; cursor: pointer;
+  border-radius: 6px; font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem; font-weight: 500; transition: all 0.2s;
+  background: transparent; color: var(--text-muted);
+}
+.modal-tab.active { background: rgba(18,160,143,0.2); color: var(--teal-light); }
+
+.modal-footer-text {
+  text-align: center; font-size: 0.75rem;
+  color: var(--text-muted); margin-top: 1.2rem;
+}
+.modal-footer-text a { color: var(--teal-light); text-decoration: none; cursor: pointer; }
+.modal-footer-text a:hover { text-decoration: underline; }
 
 /* ── HERO ── */
 .hero {
@@ -579,13 +702,16 @@ footer {
 <!-- NAV -->
 <nav>
   <div class="logo">Denta<span>Cloud</span></div>
-  <div class="nav-links">
+<div class="nav-links">
     <a href="#features">Fonctionnalités</a>
     <a href="#pricing">Tarifs</a>
     <a href="#testimonials">Témoignages</a>
     <a href="#contact">Contact</a>
   </div>
-  <button class="btn-nav" onclick="window.location.href='inscription.html'">Essai Gratuit 30j →</button>
+  <div style="display:flex;gap:0.7rem;align-items:center;flex-wrap:wrap;">
+    <button class="btn-nav-outline" id="btnEspaceClient" onclick="openLoginModal()">🔐 Espace Client</button>
+    <button class="btn-nav" onclick="openRegisterModal()">Essai Gratuit 30j →</button>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -603,8 +729,8 @@ footer {
   <p class="hero-sub">Gérez vos rendez-vous, dossiers patients, facturation et stock — en arabe et en français, adapté aux PME algériennes.</p>
 
   <div class="hero-ctas">
-    <button class="btn-primary" onclick="window.location.href='inscription.html'">Démarrer gratuitement</button>
-    <button class="btn-secondary">▶ Voir la démo</button>
+<button class="btn-primary" onclick="openRegisterModal()">Démarrer gratuitement</button>
+    <button class="btn-secondary" onclick="document.querySelector('.dashboard-preview').scrollIntoView({behavior:'smooth'})">▶ Voir la démo</button>
   </div>
 
   <div class="hero-stats">
@@ -860,7 +986,7 @@ footer {
           <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:#8BBDB5;"><span style="color:#12A08F;">✓</span> Tableau de bord simple</div>
           <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:#8BBDB5;"><span style="color:#12A08F;">✓</span> 30 jours d'essai gratuit</div>
         </div>
-        <button onclick="ouvrirModal()" class="btn-plan" style="width:100%;padding:0.9rem;background:transparent;color:#12A08F;border:1px solid rgba(18,160,143,0.3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;">Démarrer l'essai gratuit →</button>
+        <button onclick="openRegisterModal()" class="btn-plan" style="width:100%;padding:0.9rem;background:transparent;color:#12A08F;border:1px solid rgba(18,160,143,0.3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;">Démarrer l'essai gratuit →</button>
       </div>
 
       <!-- Pro -->
@@ -881,7 +1007,7 @@ footer {
           <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:#8BBDB5;"><span style="color:#C8973A;">✓</span> Sauvegarde cloud</div>
           <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:#8BBDB5;"><span style="color:#C8973A;">✓</span> 30 jours d'essai gratuit</div>
         </div>
-        <button onclick="ouvrirModal()" class="btn-plan" style="width:100%;padding:0.9rem;background:linear-gradient(135deg,#C8973A,#E8B55A);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;">Démarrer l'essai gratuit →</button>
+        <button onclick="openRegisterModal()" class="btn-plan" style="width:100%;padding:0.9rem;background:linear-gradient(135deg,#C8973A,#E8B55A);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;">Démarrer l'essai gratuit →</button>
       </div>
 
       <!-- Premium -->
@@ -892,6 +1018,7 @@ footer {
         </div>
         <div style="font-size:0.75rem;color:#8BBDB5;margin-bottom:0.4rem;">≈ 199$/mois</div>
         <div style="font-size:0.85rem;color:#8BBDB5;margin-bottom:1.5rem;">Pour les grandes cliniques</div>
+        
         <div style="display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1.8rem;">
           <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:#8BBDB5;"><span style="color:#7C3AED;">✓</span> Tout Pro inclus</div>
           <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:#8BBDB5;"><span style="color:#7C3AED;">✓</span> Multi-utilisateurs</div>
@@ -901,7 +1028,7 @@ footer {
           <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:#8BBDB5;"><span style="color:#7C3AED;">✓</span> Fonctionnalités IA avancées</div>
           <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:#8BBDB5;"><span style="color:#7C3AED;">✓</span> 30 jours d'essai gratuit</div>
         </div>
-        <button onclick="ouvrirModal()" class="btn-plan" style="width:100%;padding:0.9rem;background:transparent;color:#7C3AED;border:1px solid rgba(124,58,237,0.3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;">Démarrer l'essai gratuit →</button>
+        <button onclick="openRegisterModal()" class="btn-plan" style="width:100%;padding:0.9rem;background:transparent;color:#7C3AED;border:1px solid rgba(124,58,237,0.3);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;">Démarrer l'essai gratuit →</button>
       </div>
 
     </div>
@@ -958,8 +1085,8 @@ footer {
   <h2 class="cta-title">Prêt à digitaliser<br>votre clinique ?</h2>
   <p class="cta-sub">30 jours d'essai gratuit. Aucune carte bancaire requise. Installation en moins de 24h.</p>
   <div class="cta-input-row">
-    <input class="cta-input" type="email" placeholder="votre@email.com">
-    <button class="btn-primary">Démarrer gratuitement →</button>
+    <input class="cta-input" type="email" id="ctaEmail" placeholder="votre@email.com">
+    <button class="btn-primary" onclick="openRegisterModal()">Démarrer gratuitement →</button>
   </div>
   <p style="font-size:0.75rem;color:var(--text-muted);margin-top:1rem">✓ Essai gratuit 30j · ✓ Sans engagement · ✓ Support inclus</p>
 </div>
@@ -997,22 +1124,229 @@ footer {
   <span>Conformité ANDPPT · Données hébergées en Algérie</span>
 </div>
 
+<!-- ── LOGIN MODAL ── -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <div class="modal-logo">Denta<span>Cloud</span></div>
+    <div class="modal-sub">Connectez-vous à votre tableau de bord</div>
+    <div class="modal-error" id="loginError"></div>
+    <form onsubmit="handleLogin(event)">
+      <div style="margin-bottom:1rem;">
+        <label class="modal-label">Email</label>
+        <input class="modal-input" type="email" id="loginEmail" placeholder="dr.amira@clinique.dz" required autocomplete="email">
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label class="modal-label">Mot de passe</label>
+        <input class="modal-input" type="password" id="loginPassword" placeholder="••••••••" required minlength="6" autocomplete="current-password">
+      </div>
+      <button type="submit" class="modal-btn" id="loginBtn">🔐 Se connecter</button>
+    </form>
+    <div class="modal-footer-text">
+      Pas encore inscrit ? <a onclick="switchToRegister()">Créer un compte</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── REGISTER MODAL ── -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
+    <div class="modal-logo">Denta<span>Cloud</span></div>
+    <div class="modal-sub">Créez votre compte DentaCloud</div>
+    <div class="modal-error" id="registerError"></div>
+    <form onsubmit="handleRegister(event)">
+      <div style="margin-bottom:1rem;">
+        <label class="modal-label">Nom de la clinique</label>
+        <input class="modal-input" type="text" id="regNom" placeholder="Clinique Dentaire Oran">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label class="modal-label">Email *</label>
+        <input class="modal-input" type="email" id="regEmail" placeholder="contact@clinique.dz" required autocomplete="email">
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label class="modal-label">Mot de passe *</label>
+        <input class="modal-input" type="password" id="regPassword" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+      </div>
+      <button type="submit" class="modal-btn" id="registerBtn">✨ Créer mon compte</button>
+    </form>
+    <div class="modal-footer-text">
+      Déjà inscrit ? <a onclick="switchToLogin()">Se connecter</a>
+    </div>
+  </div>
+</div>
+
 <script>
-// Scroll animation
+// ═══════════════════════════════════════════════════════════════════
+// Supabase — même projet que le dashboard
+// ═══════════════════════════════════════════════════════════════════
+const { createClient } = supabase;
+const SUPABASE_URL = 'https://rsefzvesepznxozgidcr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWZ6dmVzZXB6bnhvemdpZGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNzg5MDYsImV4cCI6MjA4ODc1NDkwNn0.cCicEjXYvYHsrDPCsOVq6G33q1PBxYsf7xvcMeO0UKA';
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const DASHBOARD_URL = '/dentacloud-dashboard/';
+
+// ═══════════════════════════════════════════════════════════════════
+// Scroll animation + CTA
+// ═══════════════════════════════════════════════════════════════════
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
 
-// CTA button
-document.querySelector('.cta-section .btn-primary').addEventListener('click', () => {
-  const email = document.querySelector('.cta-input').value;
-  if(email && email.includes('@')) {
-    window.location.href = 'inscription.html';
+// ═══════════════════════════════════════════════════════════════════
+// Modal helpers
+// ═══════════════════════════════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+  // Clear errors
+  const errEl = document.getElementById(id === 'loginModal' ? 'loginError' : 'registerError');
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+}
+
+function openLoginModal() {
+  openModal('loginModal');
+}
+
+function openRegisterModal() {
+  openModal('registerModal');
+}
+
+function switchToRegister() {
+  closeModal('loginModal');
+  openModal('registerModal');
+}
+
+function switchToLogin() {
+  closeModal('registerModal');
+  openModal('loginModal');
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// ── Backward-compatible alias for legacy onclick handlers ──
+function ouvrirModal() {
+  openRegisterModal();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Expose ALL functions globally for inline onclick="..."
+// ═══════════════════════════════════════════════════════════════════
+window.ouvrirModal       = ouvrirModal;
+window.openModal         = openModal;
+window.closeModal        = closeModal;
+window.openLoginModal    = openLoginModal;
+window.openRegisterModal = openRegisterModal;
+window.switchToRegister  = switchToRegister;
+window.switchToLogin     = switchToLogin;
+window.handleLogin       = handleLogin;
+window.handleRegister    = handleRegister;
+
+// ═══════════════════════════════════════════════════════════════════
+// Auth handlers
+// ═══════════════════════════════════════════════════════════════════
+async function handleLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
+  const errEl = document.getElementById('loginError');
+
+  if (!email || !password) {
+    errEl.textContent = '⚠️ Veuillez remplir tous les champs.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Connexion...';
+  errEl.style.display = 'none';
+
+  const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    errEl.textContent = '⚠️ Email ou mot de passe incorrect.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '🔐 Se connecter';
+    return;
+  }
+
+  if (data.session) {
+    // Success — go to dashboard
+    window.location.href = DASHBOARD_URL;
+  }
+}
+
+async function handleRegister(event) {
+  event.preventDefault();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const nom = document.getElementById('regNom').value.trim();
+  const btn = document.getElementById('registerBtn');
+  const errEl = document.getElementById('registerError');
+
+  if (!email || !password) {
+    errEl.textContent = '⚠️ Veuillez remplir tous les champs obligatoires.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Inscription...';
+  errEl.style.display = 'none';
+
+  const { data, error } = await _supabase.auth.signUp({
+    email, password,
+    options: { data: { nom_clinique: nom } }
+  });
+
+  if (error) {
+    errEl.textContent = '⚠️ ' + error.message;
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '✨ Créer mon compte';
+    return;
+  }
+
+  if (data.session) {
+    // Auto-signed in — go to dashboard
+    window.location.href = DASHBOARD_URL;
   } else {
-    document.querySelector('.cta-input').focus();
-    document.querySelector('.cta-input').style.borderColor = '#E57373';
-    setTimeout(() => document.querySelector('.cta-input').style.borderColor = '', 2000);
+    // Email confirmation required
+    closeModal('registerModal');
+    alert('✅ Compte créé ! Vérifiez votre boîte email pour confirmer votre inscription, puis connectez-vous.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Auto-check if already logged in
+// ═══════════════════════════════════════════════════════════════════
+_supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) {
+    // Already logged in — "Espace Client" goes directly to dashboard
+    document.getElementById('btnEspaceClient').onclick = function() {
+      window.location.href = DASHBOARD_URL;
+    };
+  } else {
+    document.getElementById('btnEspaceClient').onclick = function() {
+      openLoginModal();
+    };
   }
 });
 </script>
